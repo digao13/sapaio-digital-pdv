@@ -16,23 +16,23 @@
             </Grid.RowDefinitions>
 
             <!-- Info da Loja no PDV -->
-            <Border Grid.Row="0" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="12" Margin="0,0,0,10" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+            <Border Grid.Row="0" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="12" Margin="0,0,0,10" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                 <DockPanel>
                     <Border Width="64" Height="48" ClipToBounds="True" CornerRadius="4" Background="{DynamicResource BgSubtleBrush}" Margin="0,0,12,0">
                         <Image x:Name="ImgLojaLogo" MaxWidth="60" MaxHeight="44" Stretch="Uniform"
                                RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock x:Name="TxtLojaNome" Text="Sapaio Digital" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="TxtLojaNome" Text="Sapaio Digital" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
                         <TextBlock x:Name="TxtLojaTel" Text="Tel:" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
-                               Text="CAIXA ABERTO" FontWeight="Bold" FontSize="12.5" Foreground="#16A34A"/>
+                               Text="CAIXA ABERTO" FontWeight="SemiBold" FontSize="12.5" Foreground="#16A34A"/>
                 </DockPanel>
             </Border>
 
             <!-- Leitor de Código de Barras / Busca Rápida -->
-            <Border Grid.Row="1" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="12" Margin="0,0,0,10" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+            <Border Grid.Row="1" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="12" Margin="0,0,0,10" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -58,7 +58,7 @@
                     <RowDefinition Height="0.66*" MinHeight="160"/>
                 </Grid.RowDefinitions>
 
-                <Border Grid.Row="0" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="8" Margin="0,0,0,10" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+                <Border Grid.Row="0" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="8" Margin="0,0,0,10" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                     <DataGrid x:Name="GridSugestoes" MouseDoubleClick="GridSugestoes_MouseDoubleClick">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Produto (Duplo clique)" Binding="{Binding Nome}" Width="*"/>
@@ -69,10 +69,10 @@
                     </DataGrid>
                 </Border>
 
-                <Border Grid.Row="1" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+                <Border Grid.Row="1" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                     <DockPanel>
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
-                            <TextBlock Text="CARRINHO DE COMPRAS" FontWeight="Bold" FontSize="13.5" Foreground="{DynamicResource TextMainBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Text="CARRINHO DE COMPRAS" FontWeight="SemiBold" FontSize="13.5" Foreground="{DynamicResource TextMainBrush}" VerticalAlignment="Center"/>
                             <Button DockPanel.Dock="Right" Content="Remover Item" Style="{StaticResource DangerButton}" Padding="10,4" FontSize="11.5" HorizontalAlignment="Right" Click="BtnRemoverItem_Click"/>
                         </DockPanel>
                         <DataGrid x:Name="GridCarrinho">
@@ -89,10 +89,10 @@
         </Grid>
 
         <!-- Lado Direito: Fechamento da Venda e Impressão -->
-        <Border Grid.Column="1" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="18" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+        <Border Grid.Column="1" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="18" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel>
-                    <TextBlock Text="Fechamento da Venda" FontSize="16.5" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,12"/>
+                    <TextBlock Text="Fechamento da Venda" FontSize="16.5" FontWeight="SemiBold" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,12"/>
 
                     <TextBlock Text="Cliente (opcional)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <ComboBox x:Name="CmbCliente" DisplayMemberPath="Nome" Margin="0,0,0,10"/>
@@ -122,7 +122,7 @@
                     </Grid>
 
                     <!-- Totais -->
-                    <Border Background="#0F172A" CornerRadius="8" Padding="14" Margin="0,4,0,12">
+                    <Border Background="#1D1D1F" CornerRadius="18" Padding="14" Margin="0,4,0,12">
                         <StackPanel>
                             <DockPanel Margin="0,0,0,6">
                                 <TextBlock Text="Subtotal:" Foreground="#94A3B8" FontSize="13"/>
@@ -130,12 +130,12 @@
                             </DockPanel>
                             <DockPanel Margin="0,0,0,8">
                                 <TextBlock Text="Troco:" Foreground="#94A3B8" FontSize="13"/>
-                                <TextBlock x:Name="TxtTroco" Text="R$ 0,00" Foreground="#38BDF8" FontSize="14" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                <TextBlock x:Name="TxtTroco" Text="R$ 0,00" Foreground="#CCCCCC" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </DockPanel>
-                            <Separator Background="#334155" Margin="0,2,0,8"/>
+                            <Separator Background="#38383A" Margin="0,2,0,8"/>
                             <DockPanel>
-                                <TextBlock Text="TOTAL:" Foreground="White" FontSize="17" FontWeight="Bold"/>
-                                <TextBlock x:Name="TxtTotal" Text="R$ 0,00" Foreground="#4ADE80" FontSize="20" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                <TextBlock Text="TOTAL:" Foreground="White" FontSize="17" FontWeight="SemiBold"/>
+                                <TextBlock x:Name="TxtTotal" Text="R$ 0,00" Foreground="#2997FF" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </DockPanel>
                         </StackPanel>
                     </Border>
@@ -144,7 +144,7 @@
                     <ComboBox x:Name="CmbImpressora" Margin="0,0,0,8"/>
                     <CheckBox x:Name="ChkImprimirCupom" Content="Imprimir cupom automaticamente" IsChecked="True" Margin="0,0,0,14"/>
 
-                    <Button Content="✔  FINALIZAR VENDA" Style="{StaticResource SuccessButton}" Height="44" FontSize="14.5" Click="BtnFinalizar_Click" Margin="0,0,0,8"/>
+                    <Button Content="FINALIZAR VENDA" Style="{StaticResource SuccessButton}" Height="44" FontSize="14.5" Click="BtnFinalizar_Click" Margin="0,0,0,8"/>
                     <Button Content="Limpar Carrinho" Style="{StaticResource SecondaryButton}" Click="BtnLimparCarrinho_Click"/>
                 </StackPanel>
             </ScrollViewer>

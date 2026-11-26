@@ -5,14 +5,14 @@
         Height="620" Width="620" MinHeight="480" MinWidth="480"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BgMainBrush}">
-    <Border Margin="20" Background="{DynamicResource BgCardBrush}" CornerRadius="10" Padding="24" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+    <Border Margin="20" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="24" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <TextBlock Text="Bem-vindo ao Sapaio Digital" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
+                <TextBlock Text="Bem-vindo ao Sapaio Digital" FontSize="22" FontWeight="SemiBold" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
                 <TextBlock Text="Antes de operar o sistema, informe os dados obrigatórios da sua loja (que sairão nas Ordens de Serviço e no PDV) e o usuário administrador."
                            TextWrapping="Wrap" Foreground="{DynamicResource TextMutedBrush}" Margin="0,6,0,18" FontSize="13"/>
 
-                <TextBlock Text="1. Dados da Loja" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,8"/>
+                <TextBlock Text="1. Dados da Loja" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,8"/>
 
                 <TextBlock Text="Razão Social / Nome da Loja *" FontWeight="SemiBold" FontSize="12" Margin="0,4,0,4"/>
                 <TextBox x:Name="TxtRazaoSocial" Text="Sapaio Digital" Margin="0,0,0,10"/>
@@ -26,7 +26,7 @@
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Width="92" Height="74" BorderBrush="{DynamicResource BorderBrushLight}" BorderThickness="1" CornerRadius="6" Background="{DynamicResource BgSubtleBrush}" ClipToBounds="True">
+                    <Border Grid.Column="0" Width="92" Height="74" BorderBrush="{DynamicResource BorderBrushLight}" BorderThickness="1" CornerRadius="12" Background="{DynamicResource BgSubtleBrush}" ClipToBounds="True">
                         <Image x:Name="ImgLogoPreview" MaxWidth="84" MaxHeight="66" Stretch="Uniform"
                                RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
@@ -39,7 +39,7 @@
                 <Separator Margin="0,4,0,14"/>
 
                 <StackPanel x:Name="PanelAdmin">
-                    <TextBlock Text="2. Usuário Administrador Inicial" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,8"/>
+                    <TextBlock Text="2. Usuário Administrador Inicial" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,8"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>

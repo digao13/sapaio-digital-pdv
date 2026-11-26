@@ -39,19 +39,16 @@ public partial class MainWindow : Window
             var info = await GitHubUpdaterService.VerificarAtualizacaoAsync();
             if (info.Disponivel)
             {
-                BtnUpdateDisponivel.Content = $"⬇ Atualizar para v{info.NovaVersao}";
+                BtnUpdateDisponivel.Content = $"Atualizar para v{info.NovaVersao}";
                 BtnUpdateDisponivel.Visibility = Visibility.Visible;
             }
         }
-        catch
-        {
-            // Sem internet ou limite de API: ignora silenciosamente
-        }
+        catch { }
     }
 
     private void AtualizarBotaoTema()
     {
-        BtnToggleTema.Content = ThemeService.IsDark ? "☀️ Tema Claro" : "🌙 Tema Escuro";
+        BtnToggleTema.Content = ThemeService.IsDark ? "Tema Claro" : "Tema Escuro";
     }
 
     private void BtnToggleTema_Click(object sender, RoutedEventArgs e)
@@ -65,47 +62,35 @@ public partial class MainWindow : Window
         _sidebarRecolhida = !_sidebarRecolhida;
         if (_sidebarRecolhida)
         {
-            ColSidebar.Width = new GridLength(68);
+            ColSidebar.Width = new GridLength(72);
             PanelSidebarHeader.Visibility = Visibility.Collapsed;
             PanelSidebarFooter.Visibility = Visibility.Collapsed;
-            BtnNavPdv.Content = "🛒";
-            BtnNavOrc.Content = "🔧";
-            BtnNavProd.Content = "📦";
-            BtnNavCli.Content = "👥";
-            BtnNavRel.Content = "📊";
-            BtnNavUsu.Content = "👤";
-            BtnNavCfg.Content = "🏪";
-            BtnNavUpd.Content = "🔄";
-            BtnNavPdv.HorizontalContentAlignment = HorizontalAlignment.Center;
-            BtnNavOrc.HorizontalContentAlignment = HorizontalAlignment.Center;
-            BtnNavProd.HorizontalContentAlignment = HorizontalAlignment.Center;
-            BtnNavCli.HorizontalContentAlignment = HorizontalAlignment.Center;
-            BtnNavRel.HorizontalContentAlignment = HorizontalAlignment.Center;
-            BtnNavUsu.HorizontalContentAlignment = HorizontalAlignment.Center;
-            BtnNavCfg.HorizontalContentAlignment = HorizontalAlignment.Center;
-            BtnNavUpd.HorizontalContentAlignment = HorizontalAlignment.Center;
+            BtnNavPdv.Content = "PDV";
+            BtnNavOrc.Content = "OS";
+            BtnNavProd.Content = "EST";
+            BtnNavCli.Content = "CLI";
+            BtnNavRel.Content = "REL";
+            BtnNavUsu.Content = "USU";
+            BtnNavCfg.Content = "LOJA";
+            BtnNavUpd.Content = "UPD";
+            foreach (var b in new[] { BtnNavPdv, BtnNavOrc, BtnNavProd, BtnNavCli, BtnNavRel, BtnNavUsu, BtnNavCfg, BtnNavUpd })
+                b.HorizontalContentAlignment = HorizontalAlignment.Center;
         }
         else
         {
-            ColSidebar.Width = new GridLength(240);
+            ColSidebar.Width = new GridLength(244);
             PanelSidebarHeader.Visibility = Visibility.Visible;
             PanelSidebarFooter.Visibility = Visibility.Visible;
-            BtnNavPdv.Content = "🛒  PDV (Vendas)";
-            BtnNavOrc.Content = "🔧  Orçamentos / OS";
-            BtnNavProd.Content = "📦  Produtos e Estoque";
-            BtnNavCli.Content = "👥  Clientes";
-            BtnNavRel.Content = "📊  Relatórios";
-            BtnNavUsu.Content = "👤  Usuários";
-            BtnNavCfg.Content = "🏪  Dados da Loja";
-            BtnNavUpd.Content = "🔄  Atualizações (GitHub)";
-            BtnNavPdv.HorizontalContentAlignment = HorizontalAlignment.Left;
-            BtnNavOrc.HorizontalContentAlignment = HorizontalAlignment.Left;
-            BtnNavProd.HorizontalContentAlignment = HorizontalAlignment.Left;
-            BtnNavCli.HorizontalContentAlignment = HorizontalAlignment.Left;
-            BtnNavRel.HorizontalContentAlignment = HorizontalAlignment.Left;
-            BtnNavUsu.HorizontalContentAlignment = HorizontalAlignment.Left;
-            BtnNavCfg.HorizontalContentAlignment = HorizontalAlignment.Left;
-            BtnNavUpd.HorizontalContentAlignment = HorizontalAlignment.Left;
+            BtnNavPdv.Content = "PDV — Ponto de Venda";
+            BtnNavOrc.Content = "Orçamentos e OS";
+            BtnNavProd.Content = "Produtos e Estoque";
+            BtnNavCli.Content = "Clientes";
+            BtnNavRel.Content = "Relatórios";
+            BtnNavUsu.Content = "Usuários";
+            BtnNavCfg.Content = "Dados da Loja";
+            BtnNavUpd.Content = "Atualizações (GitHub)";
+            foreach (var b in new[] { BtnNavPdv, BtnNavOrc, BtnNavProd, BtnNavCli, BtnNavRel, BtnNavUsu, BtnNavCfg, BtnNavUpd })
+                b.HorizontalContentAlignment = HorizontalAlignment.Left;
         }
     }
 
@@ -144,37 +129,37 @@ public partial class MainWindow : Window
 
     private void NavOrcamentos_Click(object sender, RoutedEventArgs e)
     {
-        TxtTituloPagina.Text = "Orçamentos e Ordens de Serviço (Informática)";
+        TxtTituloPagina.Text = "Orçamentos e Ordens de Serviço";
         MainContent.Content = new OrcamentosView();
     }
 
     private void NavProdutos_Click(object sender, RoutedEventArgs e)
     {
-        TxtTituloPagina.Text = "Cadastro de Produtos e Movimentação de Estoque";
+        TxtTituloPagina.Text = "Produtos e Movimentação de Estoque";
         MainContent.Content = new ProdutosView();
     }
 
     private void NavClientes_Click(object sender, RoutedEventArgs e)
     {
-        TxtTituloPagina.Text = "Cadastro de Clientes";
+        TxtTituloPagina.Text = "Clientes";
         MainContent.Content = new ClientesView();
     }
 
     private void NavRelatorios_Click(object sender, RoutedEventArgs e)
     {
-        TxtTituloPagina.Text = "Relatórios de Baixas, Vendas e Orçamentos";
+        TxtTituloPagina.Text = "Relatórios e Baixas";
         MainContent.Content = new RelatoriosView();
     }
 
     private void NavUsuarios_Click(object sender, RoutedEventArgs e)
     {
-        TxtTituloPagina.Text = "Cadastro de Usuários";
+        TxtTituloPagina.Text = "Usuários";
         MainContent.Content = new UsuariosView();
     }
 
     private void NavConfiguracoes_Click(object sender, RoutedEventArgs e)
     {
-        TxtTituloPagina.Text = "Dados da Loja, Backup e Atualização via GitHub";
+        TxtTituloPagina.Text = "Dados da Loja, Backup e Atualização";
         MainContent.Content = new ConfiguracoesView();
     }
 

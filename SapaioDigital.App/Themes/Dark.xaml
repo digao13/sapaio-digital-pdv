@@ -1,24 +1,31 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="BgMainBrush" Color="#0B1120"/>
-    <SolidColorBrush x:Key="BgCardBrush" Color="#1E293B"/>
-    <SolidColorBrush x:Key="BgSubtleBrush" Color="#0F172A"/>
-    <SolidColorBrush x:Key="BgInputBrush" Color="#0F172A"/>
-    <SolidColorBrush x:Key="BgSidebarBrush" Color="#020617"/>
-    <SolidColorBrush x:Key="PrimaryBrush" Color="#3B82F6"/>
-    <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#2563EB"/>
-    <SolidColorBrush x:Key="SuccessBrush" Color="#22C55E"/>
-    <SolidColorBrush x:Key="DangerBrush" Color="#EF4444"/>
-    <SolidColorBrush x:Key="WarningBrush" Color="#F59E0B"/>
-    <SolidColorBrush x:Key="SecondaryBgBrush" Color="#334155"/>
-    <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#475569"/>
-    <SolidColorBrush x:Key="SecondaryFgBrush" Color="#F1F5F9"/>
-    <SolidColorBrush x:Key="TextMainBrush" Color="#F8FAFC"/>
-    <SolidColorBrush x:Key="TextMutedBrush" Color="#94A3B8"/>
-    <SolidColorBrush x:Key="BorderBrushLight" Color="#334155"/>
-    <SolidColorBrush x:Key="CardBorderBrush" Color="#334155"/>
-    <SolidColorBrush x:Key="DataGridLineBrush" Color="#334155"/>
-    <SolidColorBrush x:Key="DataGridBgBrush" Color="#1E293B"/>
-    <SolidColorBrush x:Key="DataGridHeaderBgBrush" Color="#0F172A"/>
-    <SolidColorBrush x:Key="DataGridRowHoverBrush" Color="#334155"/>
+    <!-- Tokens oficiais do DESIGN.md (Apple Dark Tiles) -->
+    <SolidColorBrush x:Key="BgMainBrush" Color="#000000"/>
+    <SolidColorBrush x:Key="BgCardBrush" Color="#1D1D1F"/>
+    <SolidColorBrush x:Key="BgSubtleBrush" Color="#272729"/>
+    <SolidColorBrush x:Key="BgInputBrush" Color="#252527"/>
+    <SolidColorBrush x:Key="BgSidebarBrush" Color="#0A0A0C"/>
+    <SolidColorBrush x:Key="BgSidebarCardBrush" Color="#1D1D1F"/>
+
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#0066CC"/>
+    <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#2997FF"/>
+    <SolidColorBrush x:Key="PrimaryLinkBrush" Color="#2997FF"/>
+    <SolidColorBrush x:Key="SuccessBrush" Color="#2ECC71"/>
+    <SolidColorBrush x:Key="DangerBrush" Color="#E74C3C"/>
+    <SolidColorBrush x:Key="WarningBrush" Color="#F39C12"/>
+
+    <SolidColorBrush x:Key="SecondaryBgBrush" Color="#2A2A2C"/>
+    <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#3A3A3C"/>
+    <SolidColorBrush x:Key="SecondaryFgBrush" Color="#FFFFFF"/>
+
+    <SolidColorBrush x:Key="TextMainBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="TextMutedBrush" Color="#A1A1A6"/>
+    <SolidColorBrush x:Key="BorderBrushLight" Color="#3A3A3C"/>
+    <SolidColorBrush x:Key="CardBorderBrush" Color="#2C2C2E"/>
+
+    <SolidColorBrush x:Key="DataGridLineBrush" Color="#2C2C2E"/>
+    <SolidColorBrush x:Key="DataGridBgBrush" Color="#1D1D1F"/>
+    <SolidColorBrush x:Key="DataGridHeaderBgBrush" Color="#252527"/>
+    <SolidColorBrush x:Key="DataGridRowHoverBrush" Color="#2A2A2C"/>
 </ResourceDictionary>
