@@ -1,13 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using SapaioDigital.App.Helpers;
 
@@ -17,7 +19,7 @@ public class CloudOAuthAccount
 {
     public string Provedor { get; set; } = ""; // GoogleDrive | OneDrive | Dropbox
     public string ClientId { get; set; } = "";
-    public string ClientSecret { get; set; } = ""; // Opcional (Google Desktop às vezes exige)
+    public string ClientSecret { get; set; } = "";
     public string RefreshToken { get; set; } = "";
     public string AccessToken { get; set; } = "";
     public DateTime ExpiraEmUtc { get; set; }
@@ -25,8 +27,8 @@ public class CloudOAuthAccount
 }
 
 /// <summary>
-/// Autenticação OAuth 2.0 PKCE no navegador (sem servidor externo) com armazenamento
-/// protegido por DPAPI do Windows e upload direto para Google Drive, OneDrive ou Dropbox.
+/// Autenticação OAuth 2.0 PKCE no navegador usando TcpListener puro (sem conflitos de http.sys)
+/// com armazenamento protegido por DPAPI e upload direto para Google Drive, OneDrive ou Dropbox.
 /// </summary>
 public static class CloudOAuthService
 {
@@ -110,34 +112,56 @@ public static class CloudOAuthService
         else if (provedor == "Dropbox")
             query.Append("&token_access_type=offline");
 
-        using var listener = new HttpListener();
-        listener.Prefixes.Add($"http://127.0.0.1:{CallbackPort}/");
-        listener.Start();
+        var tcp = new TcpListener(IPAddress.Loopback, CallbackPort);
+        tcp.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+        tcp.Start();
 
-        Process.Start(new ProcessStartInfo(authUrl + query) { UseShellExecute = true });
+        string? code = null;
+        string? recvState = null;
+        string? error = null;
 
-        var context = await listener.GetContextAsync();
-        string? code = context.Request.QueryString["code"];
-        string? recvState = context.Request.QueryString["state"];
-        string? error = context.Request.QueryString["error"];
+        try
+        {
+            Process.Start(new ProcessStartInfo(authUrl + query) { UseShellExecute = true });
 
-        string htmlResposta = string.IsNullOrWhiteSpace(error) && !string.IsNullOrWhiteSpace(code)
-            ? "<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Conta conectada ao Sampaio Digital!</h2><p>Você já pode fechar esta aba e voltar ao sistema.</p></body></html>"
-            : $"<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Falha na autorização</h2><p>{WebUtility.HtmlEncode(error ?? "Código não recebido")}</p></body></html>";
+            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(3));
+            using var client = await tcp.AcceptTcpClientAsync(cts.Token);
+            using var stream = client.GetStream();
 
-        byte[] buffer = Encoding.UTF8.GetBytes(htmlResposta);
-        context.Response.ContentType = "text/html; charset=utf-8";
-        context.Response.ContentLength64 = buffer.Length;
-        await context.Response.OutputStream.WriteAsync(buffer);
-        context.Response.OutputStream.Close();
-        listener.Stop();
+            byte[] reqBuf = new byte[8192];
+            int read = await stream.ReadAsync(reqBuf, cts.Token);
+            string reqText = Encoding.UTF8.GetString(reqBuf, 0, read);
+
+            string firstLine = reqText.Split('\n')[0].Trim();
+            string pathAndQuery = firstLine.Split(' ').Length >= 2 ? firstLine.Split(' ')[1] : "/";
+            var uri = new Uri($"http://127.0.0.1:{CallbackPort}{pathAndQuery}");
+            var qs = ParseQueryString(uri.Query);
+
+            qs.TryGetValue("code", out code);
+            qs.TryGetValue("state", out recvState);
+            qs.TryGetValue("error", out error);
+
+            string html = string.IsNullOrWhiteSpace(error) && !string.IsNullOrWhiteSpace(code)
+                ? "<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Conta conectada ao Sampaio Digital!</h2><p>Você já pode fechar esta aba e voltar ao sistema.</p></body></html>"
+                : $"<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Falha na autorização</h2><p>{WebUtility.HtmlEncode(error ?? "Código não recebido")}</p></body></html>";
+
+            byte[] bodyBytes = Encoding.UTF8.GetBytes(html);
+            string headers = $"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {bodyBytes.Length}\r\nConnection: close\r\n\r\n";
+            byte[] headerBytes = Encoding.ASCII.GetBytes(headers);
+            await stream.WriteAsync(headerBytes, cts.Token);
+            await stream.WriteAsync(bodyBytes, cts.Token);
+            await stream.FlushAsync(cts.Token);
+        }
+        finally
+        {
+            tcp.Stop();
+        }
 
         if (!string.IsNullOrWhiteSpace(error) || string.IsNullOrWhiteSpace(code))
             throw new InvalidOperationException($"Autorização cancelada ou recusada: {error ?? "sem código"}");
         if (recvState != state)
             throw new InvalidOperationException("Estado OAuth inválido.");
 
-        // Troca code por token
         var form = new Dictionary<string, string>
         {
             ["grant_type"] = "authorization_code",
@@ -172,6 +196,20 @@ public static class CloudOAuthService
 
         SalvarConta(conta);
         return conta;
+    }
+
+    private static Dictionary<string, string> ParseQueryString(string query)
+    {
+        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(query)) return dict;
+        foreach (var pair in query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var kv = pair.Split('=', 2);
+            string k = Uri.UnescapeDataString(kv[0]);
+            string v = kv.Length > 1 ? Uri.UnescapeDataString(kv[1].Replace('+', ' ')) : "";
+            dict[k] = v;
+        }
+        return dict;
     }
 
     public static async Task EnviarArquivoParaNuvemAsync(string filePath)
