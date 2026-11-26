@@ -120,40 +120,25 @@ public partial class ConfiguracoesView : UserControl
         string guia = provedor switch
         {
             "Dropbox" =>
-                "PASSO A PASSO DROPBOX (Mais fácil - leva 1 minuto):
-" +
-                "1. Faça login no site que acabou de abrir (dropbox.com/developers/apps/create).
-" +
-                "2. Escolha 'Scoped access' -> 'App folder' -> dê o nome 'SampaioDigitalBackup' -> Create app.
-" +
-                "3. Na aba 'Permissions', marque 'files.content.write' e 'files.content.read' e clique em Submit.
-" +
-                "4. Na aba 'Settings', em 'Redirect URIs', cole (Ctrl+V) o endereço já copiado:
-" +
-                "   http://127.0.0.1:54821/callback e clique em Add.
-" +
+                "PASSO A PASSO DROPBOX (Mais fácil - leva 1 minuto):\n" +
+                "1. Faça login no site que acabou de abrir (dropbox.com/developers/apps/create).\n" +
+                "2. Escolha 'Scoped access' -> 'App folder' -> dê o nome 'SampaioDigitalBackup' -> Create app.\n" +
+                "3. Na aba 'Permissions', marque 'files.content.write' e 'files.content.read' e clique em Submit.\n" +
+                "4. Na aba 'Settings', em 'Redirect URIs', cole (Ctrl+V) o endereço já copiado:\n" +
+                "   http://127.0.0.1:54821/callback e clique em Add.\n" +
                 "5. Copie o 'App key' (esse é o Client ID) e cole aqui no sistema!",
             "GoogleDrive" =>
-                "PASSO A PASSO GOOGLE DRIVE:
-" +
-                "1. No Google Cloud Console aberto, crie um Projeto -> vá em 'APIs e Serviços' -> 'Tela de permissão OAuth' (Externo).
-" +
-                "2. Ative a 'Google Drive API' na Biblioteca.
-" +
-                "3. Em 'Credenciais' -> 'Criar Credenciais' -> 'ID do cliente OAuth' -> Tipo: 'Aplicativo para computador (Desktop)'.
-" +
+                "PASSO A PASSO GOOGLE DRIVE:\n" +
+                "1. No Google Cloud Console aberto, crie um Projeto -> vá em 'APIs e Serviços' -> 'Tela de permissão OAuth' (Externo).\n" +
+                "2. Ative a 'Google Drive API' na Biblioteca.\n" +
+                "3. Em 'Credenciais' -> 'Criar Credenciais' -> 'ID do cliente OAuth' -> Tipo: 'Aplicativo para computador (Desktop)'.\n" +
                 "4. Copie o 'ID do cliente' e a 'Chave secreta' (Client Secret) e cole aqui!",
             _ =>
-                "PASSO A PASSO ONEDRIVE (Microsoft Entra / Azure):
-" +
-                "1. No portal aberto, clique em 'Novo registro' -> Nome: 'SampaioDigital'.
-" +
-                "2. Em 'Tipos de conta com suporte', selecione 'Contas pessoais da Microsoft'.
-" +
-                "3. Em 'URI de Redirecionamento', escolha 'Aplicativo de cliente público/nativo' e cole (Ctrl+V):
-" +
-                "   http://127.0.0.1:54821/callback
-" +
+                "PASSO A PASSO ONEDRIVE (Microsoft Entra / Azure):\n" +
+                "1. No portal aberto, clique em 'Novo registro' -> Nome: 'SampaioDigital'.\n" +
+                "2. Em 'Tipos de conta com suporte', selecione 'Contas pessoais da Microsoft'.\n" +
+                "3. Em 'URI de Redirecionamento', escolha 'Aplicativo de cliente público/nativo' e cole (Ctrl+V):\n" +
+                "   http://127.0.0.1:54821/callback\n" +
                 "4. Copie o 'ID do aplicativo (cliente)' e cole aqui no sistema!"
         };
 
