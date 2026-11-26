@@ -1,4 +1,4 @@
-# Sapaio Digital â€” Sistema de Vendas (PDV) & Ordem de ServiÃ§o (WPF + SQLite)
+# Sampaio Digital â€” Sistema de Vendas (PDV) & Ordem de ServiÃ§o (WPF + SQLite)
 
 Sistema desktop para Windows desenvolvido em **C# / WPF (.NET 8)** com persistÃªncia local em **SQLite**, projetado para lojas de informÃ¡tica e varejo.
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -122,7 +122,7 @@ public static class CloudOAuthService
         string? error = context.Request.QueryString["error"];
 
         string htmlResposta = string.IsNullOrWhiteSpace(error) && !string.IsNullOrWhiteSpace(code)
-            ? "<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Conta conectada ao Sapaio Digital!</h2><p>Você já pode fechar esta aba e voltar ao sistema.</p></body></html>"
+            ? "<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Conta conectada ao Sampaio Digital!</h2><p>Você já pode fechar esta aba e voltar ao sistema.</p></body></html>"
             : $"<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Falha na autorização</h2><p>{WebUtility.HtmlEncode(error ?? "Código não recebido")}</p></body></html>";
 
         byte[] buffer = Encoding.UTF8.GetBytes(htmlResposta);

@@ -159,7 +159,7 @@ public partial class OrcamentosView : UserControl
         {
             var os = SalvarAtual();
             if (os == null) return;
-            var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sapaio Digital" };
+            var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sampaio Digital" };
             PdfOsService.GerarOrdemServicoPdf(os, loja, abrirAposGerar: true);
             Limpar();
         }
@@ -178,7 +178,7 @@ public partial class OrcamentosView : UserControl
         }
         try
         {
-            var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sapaio Digital" };
+            var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sampaio Digital" };
             PdfOsService.GerarOrdemServicoPdf(os, loja, abrirAposGerar: true);
         }
         catch (Exception ex)

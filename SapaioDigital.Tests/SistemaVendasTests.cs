@@ -19,7 +19,7 @@ public class SistemaVendasTests
 
         var loja = new LojaConfig
         {
-            RazaoSocial = "Sapaio Digital Teste",
+            RazaoSocial = "Sampaio Digital Teste",
             Telefone = "(11) 99999-9999",
             LogoPath = "",
             Configurada = true

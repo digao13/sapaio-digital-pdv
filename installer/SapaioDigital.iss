@@ -4,11 +4,11 @@
 
 [Setup]
 AppId={{8D6B4A73-2D9E-4B18-9F5C-4B2C9E1E8A11}
-AppName=Sapaio Digital
+AppName=Sampaio Digital
 AppVersion={#AppVersion}
-AppPublisher=Sapaio Digital
-DefaultDirName={autopf}\Sapaio Digital
-DefaultGroupName=Sapaio Digital
+AppPublisher=Sampaio Digital
+DefaultDirName={autopf}\Sampaio Digital
+DefaultGroupName=Sampaio Digital
 DisableProgramGroupPage=yes
 OutputDir=output
 OutputBaseFilename=SapaioDigital-Setup-v{#AppVersion}
@@ -36,13 +36,13 @@ Source: "..\publish_out\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdir
 Source: "redist\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: NecessitaVcRedist
 
 [Icons]
-Name: "{group}\Sapaio Digital"; Filename: "{app}\SapaioDigital.App.exe"
-Name: "{group}\Desinstalar Sapaio Digital"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\Sapaio Digital"; Filename: "{app}\SapaioDigital.App.exe"; Tasks: desktopicon
+Name: "{group}\Sampaio Digital"; Filename: "{app}\SapaioDigital.App.exe"
+Name: "{group}\Desinstalar Sampaio Digital"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\Sampaio Digital"; Filename: "{app}\SapaioDigital.App.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /passive /norestart"; StatusMsg: "Instalando Microsoft Visual C++ Redistributable (x64)..."; Check: NecessitaVcRedist
-Filename: "{app}\SapaioDigital.App.exe"; Description: "Executar Sapaio Digital"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\SapaioDigital.App.exe"; Description: "Executar Sampaio Digital"; Flags: nowait postinstall skipifsilent
 
 [Code]
 function NecessitaVcRedist: Boolean;

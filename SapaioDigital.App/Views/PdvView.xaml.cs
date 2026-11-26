@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using System.IO;
@@ -226,7 +226,7 @@ public partial class PdvView : UserControl
         try
         {
             DatabaseService.FinalizarVenda(venda);
-            var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sapaio Digital" };
+            var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sampaio Digital" };
 
             if (ChkImprimirCupom.IsChecked == true)
             {

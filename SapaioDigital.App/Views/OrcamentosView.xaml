@@ -19,7 +19,7 @@
                                        RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock x:Name="TxtLojaNome" Text="Sapaio Digital" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TxtLojaNome" Text="Sampaio Digital" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
                                 <TextBlock x:Name="TxtLojaTel" Text="Tel:" FontSize="11.5" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DockPanel>

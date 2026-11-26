@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -117,6 +117,46 @@ public partial class ConfiguracoesView : UserControl
         string provedor = (CmbProvedorOAuth.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Dropbox";
         Clipboard.SetText("http://127.0.0.1:54821/callback");
 
+        string guia = provedor switch
+        {
+            "Dropbox" =>
+                "PASSO A PASSO DROPBOX (Mais fácil - leva 1 minuto):
+" +
+                "1. Faça login no site que acabou de abrir (dropbox.com/developers/apps/create).
+" +
+                "2. Escolha 'Scoped access' -> 'App folder' -> dê o nome 'SampaioDigitalBackup' -> Create app.
+" +
+                "3. Na aba 'Permissions', marque 'files.content.write' e 'files.content.read' e clique em Submit.
+" +
+                "4. Na aba 'Settings', em 'Redirect URIs', cole (Ctrl+V) o endereço já copiado:
+" +
+                "   http://127.0.0.1:54821/callback e clique em Add.
+" +
+                "5. Copie o 'App key' (esse é o Client ID) e cole aqui no sistema!",
+            "GoogleDrive" =>
+                "PASSO A PASSO GOOGLE DRIVE:
+" +
+                "1. No Google Cloud Console aberto, crie um Projeto -> vá em 'APIs e Serviços' -> 'Tela de permissão OAuth' (Externo).
+" +
+                "2. Ative a 'Google Drive API' na Biblioteca.
+" +
+                "3. Em 'Credenciais' -> 'Criar Credenciais' -> 'ID do cliente OAuth' -> Tipo: 'Aplicativo para computador (Desktop)'.
+" +
+                "4. Copie o 'ID do cliente' e a 'Chave secreta' (Client Secret) e cole aqui!",
+            _ =>
+                "PASSO A PASSO ONEDRIVE (Microsoft Entra / Azure):
+" +
+                "1. No portal aberto, clique em 'Novo registro' -> Nome: 'SampaioDigital'.
+" +
+                "2. Em 'Tipos de conta com suporte', selecione 'Contas pessoais da Microsoft'.
+" +
+                "3. Em 'URI de Redirecionamento', escolha 'Aplicativo de cliente público/nativo' e cole (Ctrl+V):
+" +
+                "   http://127.0.0.1:54821/callback
+" +
+                "4. Copie o 'ID do aplicativo (cliente)' e cole aqui no sistema!"
+        };
+
         string portalUrl = provedor switch
         {
             "Dropbox" => "https://www.dropbox.com/developers/apps/create",
@@ -126,13 +166,7 @@ public partial class ConfiguracoesView : UserControl
         };
 
         Process.Start(new ProcessStartInfo(portalUrl) { UseShellExecute = true });
-
-        MessageBox.Show(
-            $"O portal oficial do {provedor} foi aberto no seu navegador!\n\n" +
-            $"O Redirect URI já foi copiado para a sua área de transferência (Ctrl+V):\n" +
-            $"http://127.0.0.1:54821/callback\n\n" +
-            $"Após criar o app e colar o Redirect URI, copie o Client ID gerado e cole aqui.",
-            "Como obter o Client ID", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show(guia, $"Como gerar o Client ID ({provedor})", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private async void BtnConectarOAuth_Click(object sender, RoutedEventArgs e)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,7 +51,7 @@ public partial class RelatoriosView : UserControl
         var vendaCompleta = DatabaseService.ObterVendaCompleta(v.Id);
         if (vendaCompleta == null) return;
 
-        var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sapaio Digital" };
+        var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sampaio Digital" };
         try
         {
             CupomNaoFiscalService.ImprimirCupom(vendaCompleta, loja);
@@ -73,7 +73,7 @@ public partial class RelatoriosView : UserControl
         var vendaCompleta = DatabaseService.ObterVendaCompleta(v.Id);
         if (vendaCompleta == null) return;
 
-        var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sapaio Digital" };
+        var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sampaio Digital" };
         try
         {
             PdfVendaService.GerarComprovanteA4Pdf(vendaCompleta, loja, abrirAposGerar: true);
@@ -92,7 +92,7 @@ public partial class RelatoriosView : UserControl
             return;
         }
 
-        var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sapaio Digital" };
+        var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sampaio Digital" };
         try
         {
             PdfOsService.GerarOrdemServicoPdf(os, loja, abrirAposGerar: true);
