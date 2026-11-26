@@ -110,7 +110,7 @@
 
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <Button x:Name="BtnUpdateDisponivel" Content="Atualizar Sistema" Style="{StaticResource PrimaryButton}"
-                                Padding="14,7" FontSize="12.5" Margin="0,0,10,0" Visibility="Collapsed" Click="NavConfiguracoes_Click"/>
+                                Padding="14,7" FontSize="12.5" Margin="0,0,10,0" Visibility="Collapsed" Click="BtnUpdateDisponivel_Click"/>
                         <Button x:Name="BtnToggleTema" Content="Tema Escuro" Style="{StaticResource SecondaryButton}" Padding="14,7" FontSize="12.5" Margin="0,0,16,0"
                                 Click="BtnToggleTema_Click"/>
                         <TextBlock x:Name="TxtDataHoraTopo" VerticalAlignment="Center" Foreground="{DynamicResource TextMutedBrush}" FontSize="12.5"/>

@@ -13,6 +13,7 @@ public partial class MainWindow : Window
 {
     private readonly DispatcherTimer _timer;
     private bool _sidebarRecolhida;
+    private AtualizacaoInfo? _updateInfo;
 
     public MainWindow()
     {
@@ -55,6 +56,7 @@ public partial class MainWindow : Window
             var info = await GitHubUpdaterService.VerificarAtualizacaoAsync();
             if (info.Disponivel)
             {
+                _updateInfo = info;
                 BtnUpdateDisponivel.Content = $"Atualizar para v{info.NovaVersao}";
                 BtnUpdateDisponivel.Visibility = Visibility.Visible;
             }
@@ -156,6 +158,36 @@ public partial class MainWindow : Window
     {
         TxtTituloPagina.Text = "Dados da Loja, Backup e Atualização";
         MainContent.Content = new ConfiguracoesView();
+    }
+
+    private async void BtnUpdateDisponivel_Click(object sender, RoutedEventArgs e)
+    {
+        if (_updateInfo == null || string.IsNullOrWhiteSpace(_updateInfo.DownloadUrl))
+        {
+            NavConfiguracoes_Click(sender, e);
+            return;
+        }
+
+        var resp = MessageBox.Show(
+            $"Deseja baixar e instalar a versão v{_updateInfo.NovaVersao} agora?\n\nUm backup do banco de dados será feito automaticamente antes da atualização.",
+            "Atualização Disponível",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (resp != MessageBoxResult.Yes) return;
+
+        BtnUpdateDisponivel.IsEnabled = false;
+        BtnUpdateDisponivel.Content = "Baixando atualização...";
+        try
+        {
+            await GitHubUpdaterService.BaixarEAplicarAtualizacaoAsync(_updateInfo.DownloadUrl);
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Erro ao baixar/aplicar atualização: {ex.Message}", "Atualização", MessageBoxButton.OK, MessageBoxImage.Error);
+            BtnUpdateDisponivel.IsEnabled = true;
+            BtnUpdateDisponivel.Content = $"Atualizar para v{_updateInfo.NovaVersao}";
+        }
     }
 
     private void BtnTrocarUsuario_Click(object sender, RoutedEventArgs e)
