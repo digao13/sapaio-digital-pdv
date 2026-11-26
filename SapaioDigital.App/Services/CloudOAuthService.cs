@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -140,6 +140,9 @@ public static class CloudOAuthService
             qs.TryGetValue("code", out code);
             qs.TryGetValue("state", out recvState);
             qs.TryGetValue("error", out error);
+            qs.TryGetValue("error_description", out var errorDesc);
+            if (!string.IsNullOrWhiteSpace(errorDesc))
+                error = string.IsNullOrWhiteSpace(error) ? errorDesc : $"{error}: {errorDesc}";
 
             string html = string.IsNullOrWhiteSpace(error) && !string.IsNullOrWhiteSpace(code)
                 ? "<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Conta conectada ao Sampaio Digital!</h2><p>Você já pode fechar esta aba e voltar ao sistema.</p></body></html>"
