@@ -42,6 +42,8 @@ public static class PdfOsService
                         row.RelativeItem().PaddingLeft(12).Column(info =>
                         {
                             info.Item().Text(loja.RazaoSocial).FontSize(18).Bold().FontColor("#1E293B");
+                            if (!string.IsNullOrWhiteSpace(loja.Cnpj))
+                                info.Item().Text($"CNPJ: {loja.Cnpj}").FontSize(9.5f).FontColor("#475569");
                             info.Item().Text($"Telefone / WhatsApp: {loja.Telefone}").FontSize(10).FontColor("#475569");
                             info.Item().Text("Assistência Técnica e Informática").FontSize(9).FontColor("#64748B");
                         });

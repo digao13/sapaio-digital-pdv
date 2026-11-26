@@ -29,6 +29,7 @@ public partial class ConfiguracoesView : UserControl
         {
             TxtRazaoSocial.Text = loja.RazaoSocial;
             TxtTelefone.Text = loja.Telefone;
+            TxtCnpj.Text = loja.Cnpj;
             _logoPath = loja.LogoPath;
             CarregarPreview(_logoPath);
         }
@@ -41,7 +42,6 @@ public partial class ConfiguracoesView : UserControl
     {
         _carregandoBackup = true;
         var cfg = BackupService.CarregarConfig();
-        TxtPlataformaAtiva.Text = cfg.Plataforma;
         TxtPastaBackup.Text = cfg.PastaDestino;
         ChkBackupDiario.IsChecked = cfg.BackupDiarioAutomatico;
         TxtUltimoBackup.Text = string.IsNullOrWhiteSpace(cfg.UltimaDataBackup)
@@ -49,13 +49,20 @@ public partial class ConfiguracoesView : UserControl
             : $"Último backup ({cfg.Plataforma}): {cfg.UltimaDataBackup}";
 
         var status = BackupService.ObterStatusProvedores();
-        var one = status.First(s => s.Nome == "OneDrive");
-        var gd = status.First(s => s.Nome == "Google Drive");
-        var db = status.First(s => s.Nome == "Dropbox");
+        TxtStatusPastasPC.Text = string.Join(" • ", status.Select(s => $"{s.Nome}: {(s.Disponivel ? "Detectado" : "Não encontrado")}"));
 
-        TxtStatusOneDrive.Text = $"OneDrive: {(one.Disponivel ? "Conectado" : "Não encontrado")}";
-        TxtStatusGoogleDrive.Text = $"Google Drive: {(gd.Disponivel ? "Conectado" : "Não encontrado")}";
-        TxtStatusDropbox.Text = $"Dropbox: {(db.Disponivel ? "Conectado" : "Não encontrado")}";
+        var conta = CloudOAuthService.CarregarConta();
+        if (conta != null && conta.Conectado)
+        {
+            TxtStatusContaOAuth.Text = $"Conta conectada via Navegador: {conta.Provedor}";
+            TxtOAuthClientId.Text = conta.ClientId;
+            BtnDesconectarOAuth.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            TxtStatusContaOAuth.Text = "Nenhuma conta conectada via navegador";
+            BtnDesconectarOAuth.Visibility = Visibility.Collapsed;
+        }
 
         GridBackups.ItemsSource = BackupService.ListarBackupsDisponiveis();
         _carregandoBackup = false;
@@ -98,10 +105,46 @@ public partial class ConfiguracoesView : UserControl
         {
             RazaoSocial = TxtRazaoSocial.Text.Trim(),
             Telefone = TxtTelefone.Text.Trim(),
+            Cnpj = TxtCnpj.Text.Trim(),
             LogoPath = _logoPath,
             Configurada = true
         });
         MessageBox.Show("Dados da loja atualizados com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private async void BtnConectarOAuth_Click(object sender, RoutedEventArgs e)
+    {
+        string provedor = (CmbProvedorOAuth.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Dropbox";
+        if (string.IsNullOrWhiteSpace(TxtOAuthClientId.Text))
+        {
+            MessageBox.Show("Informe o Client ID do aplicativo para abrir a página de autorização.\nRedirect URI: http://127.0.0.1:54821/callback", "Client ID obrigatório", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        BtnConectarOAuth.IsEnabled = false;
+        TxtStatusContaOAuth.Text = "Aguardando autorização no navegador...";
+        try
+        {
+            var conta = await CloudOAuthService.ConectarViaNavegadorAsync(provedor, TxtOAuthClientId.Text, TxtOAuthClientSecret.Text);
+            CarregarConfigBackup();
+            MessageBox.Show($"Conta {conta.Provedor} conectada com sucesso! Os backups serão enviados automaticamente para a nuvem.", "Nuvem Conectada", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Não foi possível conectar: {ex.Message}", "Erro OAuth", MessageBoxButton.OK, MessageBoxImage.Error);
+            CarregarConfigBackup();
+        }
+        finally
+        {
+            BtnConectarOAuth.IsEnabled = true;
+        }
+    }
+
+    private void BtnDesconectarOAuth_Click(object sender, RoutedEventArgs e)
+    {
+        CloudOAuthService.DesconectarConta();
+        CarregarConfigBackup();
+        MessageBox.Show("Conta da nuvem desconectada.", "Backup em Nuvem", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void DefinirDestinoBackup(string pasta, string plataforma)
@@ -118,46 +161,29 @@ public partial class ConfiguracoesView : UserControl
     private void BtnOneDrive_Click(object sender, RoutedEventArgs e)
     {
         var dir = BackupService.DetectarPastaOneDrive();
-        if (dir == null)
-        {
-            MessageBox.Show("OneDrive não detectado neste PC. Faça login no OneDrive do Windows ou use 'Escolher Pasta Local...'.", "OneDrive", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
+        if (dir == null) { MessageBox.Show("OneDrive não detectado neste PC.", "OneDrive", MessageBoxButton.OK, MessageBoxImage.Information); return; }
         DefinirDestinoBackup(dir, "OneDrive");
     }
 
     private void BtnDropbox_Click(object sender, RoutedEventArgs e)
     {
         var dir = BackupService.DetectarPastaDropbox();
-        if (dir == null)
-        {
-            MessageBox.Show("Dropbox não detectado neste PC. Instale o Dropbox ou use 'Escolher Pasta Local...'.", "Dropbox", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
+        if (dir == null) { MessageBox.Show("Dropbox não detectado neste PC.", "Dropbox", MessageBoxButton.OK, MessageBoxImage.Information); return; }
         DefinirDestinoBackup(dir, "Dropbox");
     }
 
     private void BtnGoogleDrive_Click(object sender, RoutedEventArgs e)
     {
         var dir = BackupService.DetectarPastaGoogleDrive();
-        if (dir == null)
-        {
-            MessageBox.Show("Google Drive não detectado. Instale o 'Google Drive para Desktop' no Windows ou selecione a pasta em 'Escolher Pasta Local...'.", "Google Drive", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
+        if (dir == null) { MessageBox.Show("Google Drive para Desktop não detectado neste PC.", "Google Drive", MessageBoxButton.OK, MessageBoxImage.Information); return; }
         DefinirDestinoBackup(dir, "Google Drive");
     }
 
     private void BtnEscolherPasta_Click(object sender, RoutedEventArgs e)
     {
-        var dlg = new OpenFolderDialog
-        {
-            Title = "Selecione a pasta de destino para os backups (Local ou Nuvem)"
-        };
+        var dlg = new OpenFolderDialog { Title = "Selecione a pasta de destino para os backups" };
         if (dlg.ShowDialog() == true)
-        {
             DefinirDestinoBackup(dlg.FolderName, "Pasta Personalizada");
-        }
     }
 
     private void ChkBackupDiario_Changed(object sender, RoutedEventArgs e)

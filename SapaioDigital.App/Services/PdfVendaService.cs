@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using QuestPDF.Fluent;
@@ -44,6 +44,8 @@ public static class PdfVendaService
                         row.RelativeItem().PaddingLeft(12).Column(info =>
                         {
                             info.Item().Text(loja.RazaoSocial).FontSize(18).Bold().FontColor("#1D1D1F");
+                            if (!string.IsNullOrWhiteSpace(loja.Cnpj))
+                                info.Item().Text($"CNPJ: {loja.Cnpj}").FontSize(9.5f).FontColor("#6E6E73");
                             info.Item().Text($"Telefone / WhatsApp: {loja.Telefone}").FontSize(10).FontColor("#6E6E73");
                             info.Item().Text("Comprovante de Venda (Sem Valor Fiscal)").FontSize(9).FontColor("#6E6E73");
                         });

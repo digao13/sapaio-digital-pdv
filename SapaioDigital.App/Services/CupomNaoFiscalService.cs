@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
@@ -19,6 +19,8 @@ public static class CupomNaoFiscalService
         string linha = new string('-', largura);
 
         sb.AppendLine(Centralizar(loja.RazaoSocial.ToUpperInvariant(), largura));
+        if (!string.IsNullOrWhiteSpace(loja.Cnpj))
+            sb.AppendLine(Centralizar($"CNPJ: {loja.Cnpj}", largura));
         sb.AppendLine(Centralizar($"Tel: {loja.Telefone}", largura));
         sb.AppendLine(linha);
         sb.AppendLine(Centralizar("CUPOM NAO FISCAL - COMPROVANTE", largura));

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -26,6 +26,7 @@ public partial class OnboardingWindow : Window
         {
             TxtRazaoSocial.Text = loja.RazaoSocial;
             TxtTelefone.Text = loja.Telefone;
+            TxtCnpj.Text = loja.Cnpj;
             if (!string.IsNullOrWhiteSpace(loja.LogoPath) && File.Exists(loja.LogoPath))
             {
                 _logoPath = loja.LogoPath;
@@ -67,9 +68,9 @@ public partial class OnboardingWindow : Window
             MessageBox.Show("Informe a Razão Social da loja.", "Campo obrigatório", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        if (string.IsNullOrWhiteSpace(TxtTelefone.Text))
+        if (!InputValidator.TelefoneValido(TxtTelefone.Text))
         {
-            MessageBox.Show("Informe o Telefone da loja.", "Campo obrigatório", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Informe um Telefone válido da loja (mínimo 8 dígitos).", "Campo obrigatório", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
         if (string.IsNullOrWhiteSpace(_logoPath) || !File.Exists(_logoPath))
@@ -93,6 +94,7 @@ public partial class OnboardingWindow : Window
             {
                 RazaoSocial = TxtRazaoSocial.Text.Trim(),
                 Telefone = TxtTelefone.Text.Trim(),
+                Cnpj = TxtCnpj.Text.Trim(),
                 LogoPath = _logoPath,
                 Configurada = true
             };

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -150,6 +150,12 @@ public static class BackupService
         config.UltimaDataBackup = DateTime.Today.ToString("yyyy-MM-dd");
         config.UltimoArquivoBackup = destinoFinal;
         SalvarConfig(config);
+
+        var contaNuvem = CloudOAuthService.CarregarConta();
+        if (contaNuvem != null && contaNuvem.Conectado)
+        {
+            try { CloudOAuthService.EnviarArquivoParaNuvemAsync(destinoFinal).GetAwaiter().GetResult(); } catch { }
+        }
 
         return destinoFinal;
     }
