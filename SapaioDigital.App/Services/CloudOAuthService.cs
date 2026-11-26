@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -27,8 +28,8 @@ public class CloudOAuthAccount
 }
 
 /// <summary>
-/// Autenticação OAuth 2.0 PKCE no navegador usando TcpListener puro (sem conflitos de http.sys)
-/// com armazenamento protegido por DPAPI e upload direto para Google Drive, OneDrive ou Dropbox.
+/// Autenticação OAuth 2.0 PKCE no navegador usando TcpListener puro (sem conflitos de http.sys),
+/// suportando múltiplas contas conectadas simultaneamente (Dropbox, OneDrive e Google Drive).
 /// </summary>
 public static class CloudOAuthService
 {
@@ -36,37 +37,60 @@ public static class CloudOAuthService
     private static readonly string RedirectUri = $"http://127.0.0.1:{CallbackPort}/callback";
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromMinutes(2) };
 
-    private static string TokenFilePath => Path.Combine(AppPaths.DataRoot, "cloud_oauth.dat");
+    private static string MultiTokenFilePath => Path.Combine(AppPaths.DataRoot, "cloud_oauth_multi.dat");
+    private static string LegacyTokenFilePath => Path.Combine(AppPaths.DataRoot, "cloud_oauth.dat");
 
-    public static CloudOAuthAccount? CarregarConta()
+    public static Dictionary<string, CloudOAuthAccount> CarregarContas()
     {
         try
         {
-            if (!File.Exists(TokenFilePath)) return null;
-            byte[] encrypted = File.ReadAllBytes(TokenFilePath);
-            byte[] plain = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
-            string json = Encoding.UTF8.GetString(plain);
-            return JsonSerializer.Deserialize<CloudOAuthAccount>(json);
+            if (File.Exists(MultiTokenFilePath))
+            {
+                byte[] encrypted = File.ReadAllBytes(MultiTokenFilePath);
+                byte[] plain = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
+                string json = Encoding.UTF8.GetString(plain);
+                return JsonSerializer.Deserialize<Dictionary<string, CloudOAuthAccount>>(json) ?? new();
+            }
+
+            // Migra conta única antiga caso exista
+            if (File.Exists(LegacyTokenFilePath))
+            {
+                byte[] encrypted = File.ReadAllBytes(LegacyTokenFilePath);
+                byte[] plain = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
+                var legacy = JsonSerializer.Deserialize<CloudOAuthAccount>(Encoding.UTF8.GetString(plain));
+                if (legacy != null && !string.IsNullOrWhiteSpace(legacy.Provedor))
+                {
+                    var dict = new Dictionary<string, CloudOAuthAccount> { [legacy.Provedor] = legacy };
+                    SalvarContas(dict);
+                    return dict;
+                }
+            }
         }
-        catch
-        {
-            return null;
-        }
+        catch { }
+
+        return new Dictionary<string, CloudOAuthAccount>();
     }
 
-    public static void SalvarConta(CloudOAuthAccount conta)
+    public static CloudOAuthAccount? ObterConta(string provedor)
+    {
+        var contas = CarregarContas();
+        return contas.TryGetValue(provedor, out var c) ? c : null;
+    }
+
+    public static void SalvarContas(Dictionary<string, CloudOAuthAccount> contas)
     {
         AppPaths.EnsureDirectories();
-        string json = JsonSerializer.Serialize(conta);
+        string json = JsonSerializer.Serialize(contas);
         byte[] plain = Encoding.UTF8.GetBytes(json);
         byte[] encrypted = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
-        File.WriteAllBytes(TokenFilePath, encrypted);
+        File.WriteAllBytes(MultiTokenFilePath, encrypted);
     }
 
-    public static void DesconectarConta()
+    public static void DesconectarConta(string provedor)
     {
-        if (File.Exists(TokenFilePath))
-            File.Delete(TokenFilePath);
+        var contas = CarregarContas();
+        if (contas.Remove(provedor))
+            SalvarContas(contas);
     }
 
     public static async Task<CloudOAuthAccount> ConectarViaNavegadorAsync(string provedor, string clientId, string clientSecret = "")
@@ -145,7 +169,7 @@ public static class CloudOAuthService
                 error = string.IsNullOrWhiteSpace(error) ? errorDesc : $"{error}: {errorDesc}";
 
             string html = string.IsNullOrWhiteSpace(error) && !string.IsNullOrWhiteSpace(code)
-                ? "<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Conta conectada ao Sampaio Digital!</h2><p>Você já pode fechar esta aba e voltar ao sistema.</p></body></html>"
+                ? $"<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>{provedor} conectado ao Sampaio Digital!</h2><p>Você já pode fechar esta aba e voltar ao sistema.</p></body></html>"
                 : $"<html><body style='font-family:Segoe UI;text-align:center;padding:40px;'><h2>Falha na autorização</h2><p>{WebUtility.HtmlEncode(error ?? "Código não recebido")}</p></body></html>";
 
             byte[] bodyBytes = Encoding.UTF8.GetBytes(html);
@@ -197,53 +221,50 @@ public static class CloudOAuthService
             ExpiraEmUtc = DateTime.UtcNow.AddSeconds(Math.Max(60, expiresIn - 60))
         };
 
-        SalvarConta(conta);
+        var contas = CarregarContas();
+        contas[provedor] = conta;
+        SalvarContas(contas);
         return conta;
     }
 
-    private static Dictionary<string, string> ParseQueryString(string query)
+    public static async Task<List<string>> EnviarParaTodasNuvensAsync(string filePath)
     {
-        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (string.IsNullOrWhiteSpace(query)) return dict;
-        foreach (var pair in query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
-        {
-            var kv = pair.Split('=', 2);
-            string k = Uri.UnescapeDataString(kv[0]);
-            string v = kv.Length > 1 ? Uri.UnescapeDataString(kv[1].Replace('+', ' ')) : "";
-            dict[k] = v;
-        }
-        return dict;
-    }
+        var contas = CarregarContas();
+        var enviados = new List<string>();
+        if (contas.Count == 0) return enviados;
 
-    public static async Task EnviarArquivoParaNuvemAsync(string filePath)
-    {
-        var conta = CarregarConta();
-        if (conta == null || !conta.Conectado) return;
-
-        await GarantirTokenValidoAsync(conta);
         string fileName = Path.GetFileName(filePath);
         byte[] bytes = await File.ReadAllBytesAsync(filePath);
 
-        switch (conta.Provedor)
+        foreach (var conta in contas.Values.Where(c => c.Conectado).ToList())
         {
-            case "Dropbox":
-                await UploadDropboxAsync(conta.AccessToken, fileName, bytes);
-                break;
-            case "OneDrive":
-                await UploadOneDriveAsync(conta.AccessToken, fileName, bytes);
-                break;
-            case "GoogleDrive":
-                await UploadGoogleDriveAsync(conta.AccessToken, fileName, bytes);
-                break;
+            await GarantirTokenValidoAsync(conta, contas);
+            switch (conta.Provedor)
+            {
+                case "Dropbox":
+                    await UploadDropboxAsync(conta.AccessToken, fileName, bytes);
+                    enviados.Add("Dropbox");
+                    break;
+                case "OneDrive":
+                    await UploadOneDriveAsync(conta.AccessToken, fileName, bytes);
+                    enviados.Add("OneDrive");
+                    break;
+                case "GoogleDrive":
+                    await UploadGoogleDriveAsync(conta.AccessToken, fileName, bytes);
+                    enviados.Add("Google Drive");
+                    break;
+            }
         }
+
+        return enviados;
     }
 
-    private static async Task GarantirTokenValidoAsync(CloudOAuthAccount conta)
+    private static async Task GarantirTokenValidoAsync(CloudOAuthAccount conta, Dictionary<string, CloudOAuthAccount> contas)
     {
         if (DateTime.UtcNow < conta.ExpiraEmUtc && !string.IsNullOrWhiteSpace(conta.AccessToken))
             return;
         if (string.IsNullOrWhiteSpace(conta.RefreshToken))
-            throw new InvalidOperationException("Sessão da nuvem expirada. Conecte novamente sua conta.");
+            throw new InvalidOperationException($"Sessão do {conta.Provedor} expirada. Conecte novamente.");
 
         string tokenUrl = conta.Provedor switch
         {
@@ -265,13 +286,28 @@ public static class CloudOAuthService
         using var resp = await Http.PostAsync(tokenUrl, new FormUrlEncodedContent(form));
         string json = await resp.Content.ReadAsStringAsync();
         if (!resp.IsSuccessStatusCode)
-            throw new InvalidOperationException($"Falha ao renovar acesso na nuvem: {json}");
+            throw new InvalidOperationException($"Falha ao renovar acesso ({conta.Provedor}): {json}");
 
         using var doc = JsonDocument.Parse(json);
         conta.AccessToken = doc.RootElement.GetProperty("access_token").GetString() ?? "";
         int expiresIn = doc.RootElement.TryGetProperty("expires_in", out var exp) ? exp.GetInt32() : 3600;
         conta.ExpiraEmUtc = DateTime.UtcNow.AddSeconds(Math.Max(60, expiresIn - 60));
-        SalvarConta(conta);
+        contas[conta.Provedor] = conta;
+        SalvarContas(contas);
+    }
+
+    private static Dictionary<string, string> ParseQueryString(string query)
+    {
+        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(query)) return dict;
+        foreach (var pair in query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var kv = pair.Split('=', 2);
+            string k = Uri.UnescapeDataString(kv[0]);
+            string v = kv.Length > 1 ? Uri.UnescapeDataString(kv[1].Replace('+', ' ')) : "";
+            dict[k] = v;
+        }
+        return dict;
     }
 
     private static async Task UploadDropboxAsync(string token, string fileName, byte[] bytes)

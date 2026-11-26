@@ -60,38 +60,17 @@ public partial class MainWindow : Window
     private void BtnToggleSidebar_Click(object sender, RoutedEventArgs e)
     {
         _sidebarRecolhida = !_sidebarRecolhida;
-        if (_sidebarRecolhida)
-        {
-            ColSidebar.Width = new GridLength(72);
-            PanelSidebarHeader.Visibility = Visibility.Collapsed;
-            PanelSidebarFooter.Visibility = Visibility.Collapsed;
-            BtnNavPdv.Content = "PDV";
-            BtnNavOrc.Content = "OS";
-            BtnNavProd.Content = "EST";
-            BtnNavCli.Content = "CLI";
-            BtnNavRel.Content = "REL";
-            BtnNavUsu.Content = "USU";
-            BtnNavCfg.Content = "LOJA";
-            BtnNavUpd.Content = "UPD";
-            foreach (var b in new[] { BtnNavPdv, BtnNavOrc, BtnNavProd, BtnNavCli, BtnNavRel, BtnNavUsu, BtnNavCfg, BtnNavUpd })
-                b.HorizontalContentAlignment = HorizontalAlignment.Center;
-        }
-        else
-        {
-            ColSidebar.Width = new GridLength(244);
-            PanelSidebarHeader.Visibility = Visibility.Visible;
-            PanelSidebarFooter.Visibility = Visibility.Visible;
-            BtnNavPdv.Content = "PDV — Ponto de Venda";
-            BtnNavOrc.Content = "Orçamentos e OS";
-            BtnNavProd.Content = "Produtos e Estoque";
-            BtnNavCli.Content = "Clientes";
-            BtnNavRel.Content = "Relatórios";
-            BtnNavUsu.Content = "Usuários";
-            BtnNavCfg.Content = "Dados da Loja";
-            BtnNavUpd.Content = "Atualizações (GitHub)";
-            foreach (var b in new[] { BtnNavPdv, BtnNavOrc, BtnNavProd, BtnNavCli, BtnNavRel, BtnNavUsu, BtnNavCfg, BtnNavUpd })
-                b.HorizontalContentAlignment = HorizontalAlignment.Left;
-        }
+        var vis = _sidebarRecolhida ? Visibility.Collapsed : Visibility.Visible;
+        ColSidebar.Width = new GridLength(_sidebarRecolhida ? 68 : 252);
+        PanelSidebarHeader.Visibility = vis;
+        PanelSidebarFooter.Visibility = vis;
+
+        foreach (var lbl in new[] { LblNavPdv, LblNavOrc, LblNavProd, LblNavCli, LblNavRel, LblNavUsu, LblNavCfg, LblNavUpd })
+            lbl.Visibility = vis;
+
+        var align = _sidebarRecolhida ? HorizontalAlignment.Center : HorizontalAlignment.Left;
+        foreach (var b in new[] { BtnNavPdv, BtnNavOrc, BtnNavProd, BtnNavCli, BtnNavRel, BtnNavUsu, BtnNavCfg, BtnNavUpd })
+            b.HorizontalContentAlignment = align;
     }
 
     private void AtualizarCabecalhoLoja()
@@ -147,7 +126,7 @@ public partial class MainWindow : Window
 
     private void NavRelatorios_Click(object sender, RoutedEventArgs e)
     {
-        TxtTituloPagina.Text = "Relatórios e Baixas";
+        TxtTituloPagina.Text = "Relatórios e Dashboard";
         MainContent.Content = new RelatoriosView();
     }
 

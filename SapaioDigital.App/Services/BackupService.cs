@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,20 +12,17 @@ namespace SapaioDigital.App.Services;
 public class BackupConfig
 {
     public string PastaDestino { get; set; } = AppPaths.BackupsDir;
-    public string Plataforma { get; set; } = "Local";
     public bool BackupDiarioAutomatico { get; set; } = true;
     public int ManterUltimosBackups { get; set; } = 30;
     public string UltimaDataBackup { get; set; } = "";
     public string UltimoArquivoBackup { get; set; } = "";
 }
 
-public record ProvedorNuvemStatus(string Nome, bool Disponivel, string? PastaSugerida, string StatusTexto);
-
 public record BackupArquivoInfo(string NomeArquivo, DateTime DataCriacao, string TamanhoFormatado, string CaminhoCompleto);
 
 /// <summary>
-/// Gerencia backups locais e em nuvem via pastas sincronizadas (OneDrive, Dropbox, Google Drive)
-/// com retenção automática, histórico e restauração em 1 clique.
+/// Gerencia backups locais em pasta configurável e envio simultâneo para todos os
+/// provedores de nuvem conectados via OAuth 2.0 (Dropbox, OneDrive, Google Drive).
 /// </summary>
 public static class BackupService
 {
@@ -54,79 +51,6 @@ public static class BackupService
         File.WriteAllText(ConfigPath, json);
     }
 
-    public static List<ProvedorNuvemStatus> ObterStatusProvedores()
-    {
-        var one = DetectarPastaOneDrive();
-        var gdrive = DetectarPastaGoogleDrive();
-        var drop = DetectarPastaDropbox();
-
-        return new List<ProvedorNuvemStatus>
-        {
-            new("OneDrive", one != null, one, one != null ? $"Sincronizado ({one})" : "Não encontrado neste PC"),
-            new("Google Drive", gdrive != null, gdrive, gdrive != null ? $"Sincronizado ({gdrive})" : "Instale o Google Drive para Desktop"),
-            new("Dropbox", drop != null, drop, drop != null ? $"Sincronizado ({drop})" : "Não encontrado neste PC")
-        };
-    }
-
-    public static string? DetectarPastaOneDrive()
-    {
-        string?[] candidatos =
-        {
-            Environment.GetEnvironmentVariable("OneDriveConsumer"),
-            Environment.GetEnvironmentVariable("OneDrive"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "OneDrive")
-        };
-
-        foreach (var dir in candidatos)
-        {
-            if (!string.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
-                return Path.Combine(dir, "SapaioDigital_Backups");
-        }
-        return null;
-    }
-
-    public static string? DetectarPastaDropbox()
-    {
-        string userDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Dropbox");
-        if (Directory.Exists(userDir))
-            return Path.Combine(userDir, "SapaioDigital_Backups");
-
-        string infoJson = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Dropbox", "info.json");
-        if (File.Exists(infoJson))
-        {
-            try
-            {
-                using var doc = JsonDocument.Parse(File.ReadAllText(infoJson));
-                if (doc.RootElement.TryGetProperty("personal", out var p) && p.TryGetProperty("path", out var pathEl))
-                {
-                    string? path = pathEl.GetString();
-                    if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
-                        return Path.Combine(path, "SapaioDigital_Backups");
-                }
-            }
-            catch { }
-        }
-        return null;
-    }
-
-    public static string? DetectarPastaGoogleDrive()
-    {
-        string[] candidatos =
-        {
-            @"G:\Meu Drive",
-            @"G:\My Drive",
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Google Drive"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Meu Drive")
-        };
-
-        foreach (var dir in candidatos)
-        {
-            if (Directory.Exists(dir))
-                return Path.Combine(dir, "SapaioDigital_Backups");
-        }
-        return null;
-    }
-
     public static string ExecutarBackup(string motivo = "manual")
     {
         var config = CarregarConfig();
@@ -151,11 +75,11 @@ public static class BackupService
         config.UltimoArquivoBackup = destinoFinal;
         SalvarConfig(config);
 
-        var contaNuvem = CloudOAuthService.CarregarConta();
-        if (contaNuvem != null && contaNuvem.Conectado)
+        try
         {
-            try { CloudOAuthService.EnviarArquivoParaNuvemAsync(destinoFinal).GetAwaiter().GetResult(); } catch { }
+            CloudOAuthService.EnviarParaTodasNuvensAsync(destinoFinal).GetAwaiter().GetResult();
         }
+        catch { }
 
         return destinoFinal;
     }
@@ -194,9 +118,7 @@ public static class BackupService
         if (!File.Exists(caminhoBackup) || new FileInfo(caminhoBackup).Length == 0)
             throw new FileNotFoundException("Arquivo de backup inválido ou não encontrado.", caminhoBackup);
 
-        // Faz backup preventivo do banco atual antes de restaurar
         DatabaseService.CriarBackupSeguro("pre_restauracao");
-
         SqliteConnection.ClearAllPools();
         File.Copy(caminhoBackup, AppPaths.DatabasePath, overwrite: true);
         DatabaseService.Initialize();
@@ -215,10 +137,7 @@ public static class BackupService
         {
             if (!Directory.Exists(pasta)) return;
             var arquivos = new DirectoryInfo(pasta).GetFiles("sapaio_*.db").OrderByDescending(f => f.CreationTime).Skip(manter);
-            foreach (var arq in arquivos)
-            {
-                arq.Delete();
-            }
+            foreach (var arq in arquivos) arq.Delete();
         }
         catch { }
     }

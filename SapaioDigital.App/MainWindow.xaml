@@ -1,4 +1,4 @@
-﻿<Window x:Class="SapaioDigital.App.MainWindow"
+<Window x:Class="SapaioDigital.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Sampaio Digital — Sistema de Vendas e OS"
@@ -10,11 +10,11 @@
         Foreground="{DynamicResource TextMainBrush}">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="ColSidebar" Width="244"/>
+            <ColumnDefinition x:Name="ColSidebar" Width="252"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Sidebar Estilo Apple Global Nav Dark -->
+        <!-- Sidebar Estilo Apple Global Nav Dark com Ícones Segoe MDL2 Assets -->
         <Border Grid.Column="0" Background="{DynamicResource BgSidebarBrush}">
             <DockPanel>
                 <!-- Cabeçalho da Loja na Sidebar -->
@@ -32,23 +32,63 @@
                     <StackPanel>
                         <TextBlock Text="OPERADOR CONECTADO" FontSize="10" Foreground="#A1A1A6" FontWeight="SemiBold"/>
                         <TextBlock x:Name="TxtUsuarioConectado" Text="Admin" Foreground="White" FontSize="13.5" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                        <TextBlock x:Name="TxtVersaoApp" Text="Versão 1.0.4" Foreground="#8E8E93" FontSize="11.5" Margin="0,4,0,10"/>
+                        <TextBlock x:Name="TxtVersaoApp" Text="Versão 1.4.0" Foreground="#8E8E93" FontSize="11.5" Margin="0,4,0,10"/>
                         <Button Content="Trocar Usuário" Style="{StaticResource SecondaryButton}" Padding="10,7" FontSize="12" Click="BtnTrocarUsuario_Click"/>
                     </StackPanel>
                 </Border>
 
-                <!-- Menu de Navegação -->
+                <!-- Menu de Navegação com Ícones Vetoriais -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <Button x:Name="BtnNavPdv" Content="PDV — Ponto de Venda" ToolTip="PDV (Vendas)" Style="{StaticResource SidebarButton}" Click="NavPdv_Click"/>
-                        <Button x:Name="BtnNavOrc" Content="Orçamentos e OS" ToolTip="Orçamentos / Ordem de Serviço" Style="{StaticResource SidebarButton}" Click="NavOrcamentos_Click"/>
-                        <Button x:Name="BtnNavProd" Content="Produtos e Estoque" ToolTip="Produtos e Estoque" Style="{StaticResource SidebarButton}" Click="NavProdutos_Click"/>
-                        <Button x:Name="BtnNavCli" Content="Clientes" ToolTip="Clientes" Style="{StaticResource SidebarButton}" Click="NavClientes_Click"/>
-                        <Button x:Name="BtnNavRel" Content="Relatórios" ToolTip="Relatórios" Style="{StaticResource SidebarButton}" Click="NavRelatorios_Click"/>
+                        <Button x:Name="BtnNavPdv" ToolTip="PDV (Vendas)" Style="{StaticResource SidebarButton}" Click="NavPdv_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7BF;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock x:Name="LblNavPdv" Text="PDV — Ponto de Venda" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnNavOrc" ToolTip="Orçamentos / Ordem de Serviço" Style="{StaticResource SidebarButton}" Click="NavOrcamentos_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE90F;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock x:Name="LblNavOrc" Text="Orçamentos e OS" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnNavProd" ToolTip="Produtos e Estoque" Style="{StaticResource SidebarButton}" Click="NavProdutos_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7B8;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock x:Name="LblNavProd" Text="Produtos e Estoque" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnNavCli" ToolTip="Clientes" Style="{StaticResource SidebarButton}" Click="NavClientes_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE716;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock x:Name="LblNavCli" Text="Clientes" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnNavRel" ToolTip="Relatórios e Dashboard" Style="{StaticResource SidebarButton}" Click="NavRelatorios_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE9D2;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock x:Name="LblNavRel" Text="Relatórios &amp; Dashboard" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                         <Separator Background="#272729" Margin="16,12"/>
-                        <Button x:Name="BtnNavUsu" Content="Usuários" ToolTip="Usuários" Style="{StaticResource SidebarButton}" Click="NavUsuarios_Click"/>
-                        <Button x:Name="BtnNavCfg" Content="Dados da Loja" ToolTip="Dados da Loja e Backup" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click"/>
-                        <Button x:Name="BtnNavUpd" Content="Atualizações (GitHub)" ToolTip="Verificar e instalar atualizações do GitHub" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click"/>
+                        <Button x:Name="BtnNavUsu" ToolTip="Usuários" Style="{StaticResource SidebarButton}" Click="NavUsuarios_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE77B;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock x:Name="LblNavUsu" Text="Usuários" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnNavCfg" ToolTip="Dados da Loja e Backup" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE713;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock x:Name="LblNavCfg" Text="Loja &amp; Backup" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnNavUpd" ToolTip="Atualizações do GitHub" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE895;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock x:Name="LblNavUpd" Text="Atualizações (GitHub)" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using SapaioDigital.App.Data;
@@ -46,26 +46,39 @@ public partial class ConfiguracoesView : UserControl
         ChkBackupDiario.IsChecked = cfg.BackupDiarioAutomatico;
         TxtUltimoBackup.Text = string.IsNullOrWhiteSpace(cfg.UltimaDataBackup)
             ? "Último backup: ainda não realizado"
-            : $"Último backup ({cfg.Plataforma}): {cfg.UltimaDataBackup}";
+            : $"Último backup: {cfg.UltimaDataBackup}";
 
-        var status = BackupService.ObterStatusProvedores();
-        TxtStatusPastasPC.Text = string.Join(" • ", status.Select(s => $"{s.Nome}: {(s.Disponivel ? "Detectado" : "Não encontrado")}"));
-
-        var conta = CloudOAuthService.CarregarConta();
-        if (conta != null && conta.Conectado)
-        {
-            TxtStatusContaOAuth.Text = $"Conta conectada via Navegador: {conta.Provedor}";
-            TxtOAuthClientId.Text = conta.ClientId;
-            BtnDesconectarOAuth.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            TxtStatusContaOAuth.Text = "Nenhuma conta conectada via navegador";
-            BtnDesconectarOAuth.Visibility = Visibility.Collapsed;
-        }
+        var contas = CloudOAuthService.CarregarContas();
+        AtualizarCardNuvem("Dropbox", contas, TxtStatusDropbox, TxtDropboxId, null, BtnDesconectarDropbox);
+        AtualizarCardNuvem("OneDrive", contas, TxtStatusOneDrive, TxtOneDriveId, null, BtnDesconectarOneDrive);
+        AtualizarCardNuvem("GoogleDrive", contas, TxtStatusGoogleDrive, TxtGoogleId, TxtGoogleSecret, BtnDesconectarGoogle);
 
         GridBackups.ItemsSource = BackupService.ListarBackupsDisponiveis();
         _carregandoBackup = false;
+    }
+
+    private static void AtualizarCardNuvem(
+        string provedor,
+        System.Collections.Generic.Dictionary<string, CloudOAuthAccount> contas,
+        TextBlock statusTb,
+        TextBox idTb,
+        TextBox? secretTb,
+        Button btnDesconectar)
+    {
+        if (contas.TryGetValue(provedor, out var conta) && conta.Conectado)
+        {
+            statusTb.Text = "Conectado";
+            statusTb.Foreground = new SolidColorBrush(Color.FromRgb(22, 163, 74));
+            if (string.IsNullOrWhiteSpace(idTb.Text)) idTb.Text = conta.ClientId;
+            if (secretTb != null && string.IsNullOrWhiteSpace(secretTb.Text)) secretTb.Text = conta.ClientSecret;
+            btnDesconectar.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            statusTb.Text = "Desconectado";
+            statusTb.SetResourceReference(TextBlock.ForegroundProperty, "TextMutedBrush");
+            btnDesconectar.Visibility = Visibility.Collapsed;
+        }
     }
 
     private void CarregarPreview(string path)
@@ -112,125 +125,55 @@ public partial class ConfiguracoesView : UserControl
         MessageBox.Show("Dados da loja atualizados com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
-    private void BtnObterClientId_Click(object sender, RoutedEventArgs e)
+    private async void ConectarProvedorAsync(string provedor, string clientId, string clientSecret, Button btn)
     {
-        string provedor = (CmbProvedorOAuth.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Dropbox";
-        Clipboard.SetText("http://127.0.0.1:54821/callback");
-
-        string guia = provedor switch
+        if (string.IsNullOrWhiteSpace(clientId))
         {
-            "Dropbox" =>
-                "PASSO A PASSO DROPBOX (Mais fácil - leva 1 minuto):\n" +
-                "1. Faça login no site que acabou de abrir (dropbox.com/developers/apps/create).\n" +
-                "2. Escolha 'Scoped access' -> 'App folder' -> dê o nome 'SampaioDigitalBackup' -> Create app.\n" +
-                "3. Na aba 'Permissions', marque 'files.content.write' e 'files.content.read' e clique em Submit.\n" +
-                "4. Na aba 'Settings', em 'Redirect URIs', cole (Ctrl+V) o endereço já copiado:\n" +
-                "   http://127.0.0.1:54821/callback e clique em Add.\n" +
-                "5. Copie o 'App key' (esse é o Client ID) e cole aqui no sistema!",
-            "GoogleDrive" =>
-                "PASSO A PASSO GOOGLE DRIVE:\n" +
-                "1. No Google Cloud Console aberto, crie um Projeto -> vá em 'APIs e Serviços' -> 'Tela de permissão OAuth' (Externo).\n" +
-                "2. Ative a 'Google Drive API' na Biblioteca.\n" +
-                "3. Em 'Credenciais' -> 'Criar Credenciais' -> 'ID do cliente OAuth' -> Tipo: 'Aplicativo para computador (Desktop)'.\n" +
-                "4. Copie o 'ID do cliente' e a 'Chave secreta' (Client Secret) e cole aqui!",
-            _ =>
-                "PASSO A PASSO ONEDRIVE (Microsoft Entra / Azure):\n" +
-                "1. No portal aberto, clique em 'Novo registro' -> Nome: 'SampaioDigital'.\n" +
-                "2. Em 'Tipos de conta com suporte', selecione 'Contas pessoais da Microsoft'.\n" +
-                "3. Em 'URI de Redirecionamento', escolha 'Aplicativo de cliente público/nativo' e cole (Ctrl+V):\n" +
-                "   http://127.0.0.1:54821/callback\n" +
-                "4. Copie o 'ID do aplicativo (cliente)' e cole aqui no sistema!"
-        };
-
-        string portalUrl = provedor switch
-        {
-            "Dropbox" => "https://www.dropbox.com/developers/apps/create",
-            "OneDrive" => "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade",
-            "GoogleDrive" => "https://console.cloud.google.com/apis/credentials",
-            _ => "https://www.dropbox.com/developers/apps/create"
-        };
-
-        Process.Start(new ProcessStartInfo(portalUrl) { UseShellExecute = true });
-        MessageBox.Show(guia, $"Como gerar o Client ID ({provedor})", MessageBoxButton.OK, MessageBoxImage.Information);
-    }
-
-    private async void BtnConectarOAuth_Click(object sender, RoutedEventArgs e)
-    {
-        string provedor = (CmbProvedorOAuth.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Dropbox";
-        if (string.IsNullOrWhiteSpace(TxtOAuthClientId.Text))
-        {
-            var resp = MessageBox.Show(
-                $"Para abrir a tela de login do {provedor} no navegador, é necessário informar o Client ID do aplicativo.\n\n" +
-                $"Deseja abrir agora a página oficial para gerar seu Client ID em 1 minuto?",
-                "Client ID necessário", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (resp == MessageBoxResult.Yes)
-                BtnObterClientId_Click(sender, e);
+            MessageBox.Show($"Informe o Client ID do {provedor} conforme o passo a passo exibido no card.", "Client ID obrigatório", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        BtnConectarOAuth.IsEnabled = false;
-        TxtStatusContaOAuth.Text = "Aguardando autorização no navegador...";
+        btn.IsEnabled = false;
         try
         {
-            var conta = await CloudOAuthService.ConectarViaNavegadorAsync(provedor, TxtOAuthClientId.Text, TxtOAuthClientSecret.Text);
+            await CloudOAuthService.ConectarViaNavegadorAsync(provedor, clientId, clientSecret);
             CarregarConfigBackup();
-            MessageBox.Show($"Conta {conta.Provedor} conectada com sucesso! Os backups serão enviados automaticamente para a nuvem.", "Nuvem Conectada", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"{provedor} conectado com sucesso! Os backups serão enviados automaticamente para esta conta.", "Nuvem Conectada", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Não foi possível conectar: {ex.Message}", "Erro OAuth", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Não foi possível conectar ({provedor}): {ex.Message}", "Erro OAuth", MessageBoxButton.OK, MessageBoxImage.Error);
             CarregarConfigBackup();
         }
         finally
         {
-            BtnConectarOAuth.IsEnabled = true;
+            btn.IsEnabled = true;
         }
     }
 
-    private void BtnDesconectarOAuth_Click(object sender, RoutedEventArgs e)
-    {
-        CloudOAuthService.DesconectarConta();
-        CarregarConfigBackup();
-        MessageBox.Show("Conta da nuvem desconectada.", "Backup em Nuvem", MessageBoxButton.OK, MessageBoxImage.Information);
-    }
+    private void BtnConectarDropbox_Click(object sender, RoutedEventArgs e) => ConectarProvedorAsync("Dropbox", TxtDropboxId.Text, "", BtnConectarDropbox);
+    private void BtnConectarOneDrive_Click(object sender, RoutedEventArgs e) => ConectarProvedorAsync("OneDrive", TxtOneDriveId.Text, "", BtnConectarOneDrive);
+    private void BtnConectarGoogle_Click(object sender, RoutedEventArgs e) => ConectarProvedorAsync("GoogleDrive", TxtGoogleId.Text, TxtGoogleSecret.Text, BtnConectarGoogle);
 
-    private void DefinirDestinoBackup(string pasta, string plataforma)
-    {
-        Directory.CreateDirectory(pasta);
-        var cfg = BackupService.CarregarConfig();
-        cfg.PastaDestino = pasta;
-        cfg.Plataforma = plataforma;
-        BackupService.SalvarConfig(cfg);
-        CarregarConfigBackup();
-        MessageBox.Show($"Destino de backup definido para {plataforma}:\n{pasta}", "Backup Configurado", MessageBoxButton.OK, MessageBoxImage.Information);
-    }
+    private void BtnDesconectarDropbox_Click(object sender, RoutedEventArgs e) { CloudOAuthService.DesconectarConta("Dropbox"); CarregarConfigBackup(); }
+    private void BtnDesconectarOneDrive_Click(object sender, RoutedEventArgs e) { CloudOAuthService.DesconectarConta("OneDrive"); CarregarConfigBackup(); }
+    private void BtnDesconectarGoogle_Click(object sender, RoutedEventArgs e) { CloudOAuthService.DesconectarConta("GoogleDrive"); CarregarConfigBackup(); }
 
-    private void BtnOneDrive_Click(object sender, RoutedEventArgs e)
-    {
-        var dir = BackupService.DetectarPastaOneDrive();
-        if (dir == null) { MessageBox.Show("OneDrive não detectado neste PC.", "OneDrive", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-        DefinirDestinoBackup(dir, "OneDrive");
-    }
-
-    private void BtnDropbox_Click(object sender, RoutedEventArgs e)
-    {
-        var dir = BackupService.DetectarPastaDropbox();
-        if (dir == null) { MessageBox.Show("Dropbox não detectado neste PC.", "Dropbox", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-        DefinirDestinoBackup(dir, "Dropbox");
-    }
-
-    private void BtnGoogleDrive_Click(object sender, RoutedEventArgs e)
-    {
-        var dir = BackupService.DetectarPastaGoogleDrive();
-        if (dir == null) { MessageBox.Show("Google Drive para Desktop não detectado neste PC.", "Google Drive", MessageBoxButton.OK, MessageBoxImage.Information); return; }
-        DefinirDestinoBackup(dir, "Google Drive");
-    }
+    private void BtnPortalDropbox_Click(object sender, RoutedEventArgs e) { Clipboard.SetText("http://127.0.0.1:54821/callback"); Process.Start(new ProcessStartInfo("https://www.dropbox.com/developers/apps/create") { UseShellExecute = true }); }
+    private void BtnPortalOneDrive_Click(object sender, RoutedEventArgs e) { Clipboard.SetText("http://127.0.0.1:54821/callback"); Process.Start(new ProcessStartInfo("https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade") { UseShellExecute = true }); }
+    private void BtnPortalGoogle_Click(object sender, RoutedEventArgs e) { Clipboard.SetText("http://127.0.0.1:54821/callback"); Process.Start(new ProcessStartInfo("https://console.cloud.google.com/apis/credentials") { UseShellExecute = true }); }
 
     private void BtnEscolherPasta_Click(object sender, RoutedEventArgs e)
     {
-        var dlg = new OpenFolderDialog { Title = "Selecione a pasta de destino para os backups" };
+        var dlg = new OpenFolderDialog { Title = "Selecione a pasta local para os backups" };
         if (dlg.ShowDialog() == true)
-            DefinirDestinoBackup(dlg.FolderName, "Pasta Local");
+        {
+            Directory.CreateDirectory(dlg.FolderName);
+            var cfg = BackupService.CarregarConfig();
+            cfg.PastaDestino = dlg.FolderName;
+            BackupService.SalvarConfig(cfg);
+            CarregarConfigBackup();
+        }
     }
 
     private void ChkBackupDiario_Changed(object sender, RoutedEventArgs e)
@@ -241,13 +184,15 @@ public partial class ConfiguracoesView : UserControl
         BackupService.SalvarConfig(cfg);
     }
 
-    private void BtnBackup_Click(object sender, RoutedEventArgs e)
+    private async void BtnBackup_Click(object sender, RoutedEventArgs e)
     {
         try
         {
             string path = BackupService.ExecutarBackup("manual");
+            var nuvens = await CloudOAuthService.EnviarParaTodasNuvensAsync(path);
             CarregarConfigBackup();
-            MessageBox.Show($"Backup criado com sucesso em:\n{path}", "Backup SQLite", MessageBoxButton.OK, MessageBoxImage.Information);
+            string msgNuvem = nuvens.Count > 0 ? $"\nEnviado também para: {string.Join(", ", nuvens)}" : "\n(Nenhuma nuvem OAuth conectada no momento)";
+            MessageBox.Show($"Backup local criado com sucesso em:\n{path}{msgNuvem}", "Backup Concluído", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
@@ -271,7 +216,7 @@ public partial class ConfiguracoesView : UserControl
         }
 
         var confirm = MessageBox.Show(
-            $"Deseja restaurar o banco de dados para o backup '{item.NomeArquivo}' ({item.DataCriacao:dd/MM/yyyy HH:mm})?\n\nUm backup de segurança do estado atual será criado antes da restauração.",
+            $"Deseja restaurar o banco de dados para '{item.NomeArquivo}' ({item.DataCriacao:dd/MM/yyyy HH:mm})?\n\nUm backup de segurança do estado atual será criado antes.",
             "Confirmar Restauração", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
         if (confirm != MessageBoxResult.Yes) return;

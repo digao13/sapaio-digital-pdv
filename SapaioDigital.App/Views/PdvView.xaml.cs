@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using System.IO;
@@ -77,7 +77,20 @@ public partial class PdvView : UserControl
             CmbImpressora.SelectedIndex = 0;
     }
 
-    private void AtualizarSugestoes() => GridSugestoes.ItemsSource = DatabaseService.ListarProdutos(TxtBuscaProduto.Text);
+    private void AtualizarSugestoes()
+    {
+        string termo = TxtBuscaProduto.Text.Trim();
+        if (string.IsNullOrWhiteSpace(termo))
+        {
+            GridSugestoes.ItemsSource = null;
+            BorderSugestoes.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var encontrados = DatabaseService.ListarProdutos(termo);
+        GridSugestoes.ItemsSource = encontrados;
+        BorderSugestoes.Visibility = encontrados.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     private void TxtBuscaProduto_TextChanged(object sender, TextChangedEventArgs e) => AtualizarSugestoes();
 
@@ -91,7 +104,11 @@ public partial class PdvView : UserControl
     private void GridSugestoes_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (GridSugestoes.SelectedItem is Produto p)
+        {
             AdicionarProdutoAoCarrinho(p);
+            TxtBuscaProduto.Clear();
+            TxtBuscaProduto.Focus();
+        }
     }
 
     private void AdicionarPorBusca()
