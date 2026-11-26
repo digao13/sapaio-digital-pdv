@@ -4,93 +4,98 @@
              Foreground="{DynamicResource TextMainBrush}">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.45*" MinWidth="380" MaxWidth="520"/>
-            <ColumnDefinition Width="0.55*" MinWidth="400"/>
+            <ColumnDefinition Width="0.46*" MinWidth="410" MaxWidth="560"/>
+            <ColumnDefinition Width="0.54*" MinWidth="400"/>
         </Grid.ColumnDefinitions>
 
         <!-- Formulário de Orçamento / OS -->
-        <Border Grid.Column="0" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="18" Margin="0,0,14,0" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Grid.Column="0" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="20" Margin="0,0,14,0" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
                 <StackPanel>
                     <!-- Cabeçalho com Info da Loja -->
-                    <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="12" Padding="10" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,12">
+                    <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="12" Padding="12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,14">
                         <DockPanel>
-                            <Border Width="58" Height="46" ClipToBounds="True" CornerRadius="10" Background="{DynamicResource BgCardBrush}" Margin="0,0,10,0">
+                            <Border Width="58" Height="46" ClipToBounds="True" CornerRadius="10" Background="{DynamicResource BgCardBrush}" Margin="0,0,12,0">
                                 <Image x:Name="ImgLojaLogo" MaxWidth="54" MaxHeight="42" Stretch="Uniform"
                                        RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock x:Name="TxtLojaNome" Text="Sampaio Digital" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
-                                <TextBlock x:Name="TxtLojaTel" Text="Tel:" FontSize="11.5" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TxtLojaNome" Text="Sampaio Digital" FontWeight="SemiBold" FontSize="14.5" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TxtLojaTel" Text="Tel:" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DockPanel>
                     </Border>
 
-                    <TextBlock x:Name="TxtTituloForm" Text="Novo Orçamento / Ordem de Serviço" FontSize="15.5" FontWeight="SemiBold" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <TextBlock x:Name="TxtTituloForm" Text="Novo Orçamento / Ordem de Serviço" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap" Margin="0,0,0,14"/>
 
-                    <TextBlock Text="Cliente *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CmbCliente" DisplayMemberPath="Nome" SelectedValuePath="Id" Margin="0,0,0,10"/>
+                    <!-- Identificação -->
+                    <TextBlock Text="Cliente *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                    <ComboBox x:Name="CmbCliente" DisplayMemberPath="Nome" SelectedValuePath="Id" MinHeight="36" Margin="0,0,0,12"/>
 
-                    <TextBlock Text="Equipamento / Dispositivo (Informática)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtEquipamento" Margin="0,0,0,10" ToolTip="Ex: Notebook Acer Aspire, PC Gamer, Impressora Epson"/>
+                    <TextBlock Text="Equipamento / Dispositivo (Informática)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                    <TextBox x:Name="TxtEquipamento" MinHeight="36" Margin="0,0,0,12" ToolTip="Ex: Notebook Acer Aspire, PC Gamer, Impressora Epson"/>
 
-                    <TextBlock Text="Problema Relatado *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtProblema" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
+                    <TextBlock Text="Problema Relatado *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                    <TextBox x:Name="TxtProblema" Height="64" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,12"/>
 
-                    <TextBlock Text="Serviços Previstos / Observações Técnicas" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtServicos" Height="54" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
+                    <TextBlock Text="Serviços Previstos / Observações Técnicas" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                    <TextBox x:Name="TxtServicos" Height="58" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,14"/>
 
                     <!-- Peças / Produtos do Estoque (Opcional) -->
-                    <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="12" Padding="12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,10">
+                    <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="12" Padding="14" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,14">
                         <StackPanel>
-                            <TextBlock Text="Peças / Produtos do Estoque (Opcional — dá baixa automática)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                            <TextBlock Text="Peças / Produtos do Estoque (Opcional — dá baixa automática)" FontWeight="SemiBold" FontSize="12.5" Margin="0,0,0,10" TextWrapping="Wrap"/>
+
+                            <ComboBox x:Name="CmbProdutoEstoque" DisplayMemberPath="Nome" MinHeight="36" HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
+
                             <Grid Margin="0,0,0,8">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="58"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="105"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="CmbProdutoEstoque" Grid.Column="0" DisplayMemberPath="Nome" Margin="0,0,6,0"/>
-                                <TextBox x:Name="TxtQtdPeca" Grid.Column="1" Text="1" TextAlignment="Center" Margin="0,0,6,0"/>
-                                <Button Grid.Column="2" Content="+ Add" Style="{StaticResource SecondaryButton}" Padding="10,6" Click="BtnAddPeca_Click"/>
+                                <TextBlock Grid.Column="0" Text="Qtd:" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBox x:Name="TxtQtdPeca" Grid.Column="1" Text="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Padding="6,6" MinHeight="38" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
+                                <Button Grid.Column="2" Content="+ Adicionar Peça" Style="{StaticResource SecondaryButton}" MinHeight="38" Padding="14,6" HorizontalAlignment="Stretch" Click="BtnAddPeca_Click"/>
                             </Grid>
 
-                            <DataGrid x:Name="GridItensOs" MaxHeight="130" Visibility="Collapsed" Margin="0,0,0,6">
+                            <DataGrid x:Name="GridItensOs" MaxHeight="140" Visibility="Collapsed" Margin="0,4,0,8">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Peça" Binding="{Binding ProdutoNome}" Width="*"/>
-                                    <DataGridTextColumn Header="Qtd" Binding="{Binding Quantidade}" Width="45"/>
-                                    <DataGridTextColumn Header="Vl.Un" Binding="{Binding PrecoUnitario, StringFormat=R$ {0:N2}}" Width="72"/>
-                                    <DataGridTextColumn Header="Sub" Binding="{Binding Subtotal, StringFormat=R$ {0:N2}}" Width="75"/>
+                                    <DataGridTextColumn Header="Qtd" Binding="{Binding Quantidade}" Width="50"/>
+                                    <DataGridTextColumn Header="Vl.Un" Binding="{Binding PrecoUnitario, StringFormat=R$ {0:N2}}" Width="75"/>
+                                    <DataGridTextColumn Header="Sub" Binding="{Binding Subtotal, StringFormat=R$ {0:N2}}" Width="78"/>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <Button x:Name="BtnRemoverPeca" Content="Remover Peça Selecionada" Style="{StaticResource SecondaryButton}" Padding="10,4" FontSize="11.5" HorizontalAlignment="Right" Visibility="Collapsed" Click="BtnRemoverPeca_Click"/>
+                            <Button x:Name="BtnRemoverPeca" Content="Remover Peça Selecionada" Style="{StaticResource SecondaryButton}" Padding="10,5" FontSize="11.5" HorizontalAlignment="Right" Visibility="Collapsed" Click="BtnRemoverPeca_Click"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Valores Discriminados -->
-                    <Grid Margin="0,0,0,10">
+                    <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="10"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="10"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Serviço (R$)" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtValorServico" Text="0,00" TextChanged="TxtValorServico_TextChanged"/>
+                            <TextBlock Text="Serviço (R$)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                            <TextBox x:Name="TxtValorServico" Text="0,00" MinHeight="36" Padding="10,6" TextChanged="TxtValorServico_TextChanged"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Peças (R$)" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtValorPecas" Text="0,00" IsReadOnly="True"/>
+                            <TextBlock Text="Peças (R$)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                            <TextBox x:Name="TxtValorPecas" Text="0,00" MinHeight="36" Padding="10,6" IsReadOnly="True"/>
                         </StackPanel>
                         <StackPanel Grid.Column="4">
-                            <TextBlock Text="Total OS (R$)" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtValor" Text="0,00" FontWeight="SemiBold"/>
+                            <TextBlock Text="Total OS (R$)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                            <TextBox x:Name="TxtValor" Text="0,00" MinHeight="36" Padding="10,6" FontWeight="Bold"/>
                         </StackPanel>
                     </Grid>
 
-                    <Grid Margin="0,0,0,14">
+                    <!-- Status, Data e Responsável -->
+                    <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="10"/>
@@ -99,8 +104,8 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Status" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,4"/>
-                            <ComboBox x:Name="CmbStatus">
+                            <TextBlock Text="Status" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="CmbStatus" MinHeight="36">
                                 <ComboBoxItem Content="Aberto" IsSelected="True"/>
                                 <ComboBoxItem Content="Aprovado"/>
                                 <ComboBoxItem Content="Em Serviço"/>
@@ -109,12 +114,12 @@
                             </ComboBox>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Data" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,4"/>
-                            <DatePicker x:Name="DpData"/>
+                            <TextBlock Text="Data" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                            <DatePicker x:Name="DpData" MinHeight="36" VerticalContentAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Grid.Column="4">
-                            <TextBlock Text="Responsável" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtResponsavel" IsReadOnly="True" FontWeight="SemiBold"/>
+                            <TextBlock Text="Responsável" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                            <TextBox x:Name="TxtResponsavel" MinHeight="36" Padding="10,6" IsReadOnly="True" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Grid>
 
@@ -128,12 +133,17 @@
         </Border>
 
         <!-- Lista de Orçamentos / OS -->
-        <Border Grid.Column="1" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="16" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+        <Border Grid.Column="1" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="18" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
             <DockPanel>
-                <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                    <TextBox x:Name="TxtBusca" Width="220" Margin="0,0,8,4" ToolTip="Buscar por cliente, equipamento ou problema" TextChanged="TxtBusca_TextChanged"/>
-                    <Button Content="Imprimir PDF Selecionada" Style="{StaticResource SecondaryButton}" Margin="0,0,0,4" Click="BtnImprimirSelecionada_Click"/>
-                </WrapPanel>
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="TxtBusca" Grid.Column="0" MinHeight="36" ToolTip="Buscar por cliente, equipamento ou problema" TextChanged="TxtBusca_TextChanged"/>
+                    <Button Grid.Column="2" Content="Imprimir PDF Selecionada" Style="{StaticResource SecondaryButton}" MinHeight="36" Click="BtnImprimirSelecionada_Click"/>
+                </Grid>
 
                 <DataGrid x:Name="GridOrcamentos" SelectionChanged="GridOrcamentos_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
