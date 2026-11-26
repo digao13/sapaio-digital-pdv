@@ -36,6 +36,7 @@ public partial class ConfiguracoesView : UserControl
 
         TxtVersao.Text = $"Versão instalada: {GitHubUpdaterService.ObterVersaoAtual()}";
         CarregarConfigBackup();
+        CarregarConfigTela();
     }
 
     private void CarregarConfigBackup()
@@ -276,5 +277,54 @@ public partial class ConfiguracoesView : UserControl
             TxtStatusUpdate.Text = $"Erro ao atualizar: {ex.Message}";
             BtnAplicar.IsEnabled = true;
         }
+    }
+
+    private void CarregarConfigTela()
+    {
+        var work = SystemParameters.WorkArea;
+        TxtResolucaoAtual.Text = $"Área útil detectada neste monitor: {(int)work.Width} × {(int)work.Height} px";
+
+        var cfg = DisplaySettingsService.CarregarConfig();
+        SelecionarPorTag(CmbModoResolucao, cfg.ModoResolucao);
+
+        string escalaTag = cfg.EscalaUi <= 0
+            ? "0"
+            : cfg.EscalaUi.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+        SelecionarPorTag(CmbEscalaUi, escalaTag);
+    }
+
+    private static void SelecionarPorTag(ComboBox combo, string tag)
+    {
+        foreach (var item in combo.Items)
+        {
+            if (item is ComboBoxItem cbi && string.Equals(cbi.Tag?.ToString(), tag, StringComparison.OrdinalIgnoreCase))
+            {
+                combo.SelectedItem = cbi;
+                return;
+            }
+        }
+        if (combo.Items.Count > 0) combo.SelectedIndex = 0;
+    }
+
+    private void BtnAplicarTela_Click(object sender, RoutedEventArgs e)
+    {
+        string modo = (CmbModoResolucao.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Auto";
+        string escalaStr = (CmbEscalaUi.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "0";
+        double.TryParse(escalaStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double escala);
+
+        DisplaySettingsService.SalvarConfig(new DisplayConfig
+        {
+            ModoResolucao = modo,
+            EscalaUi = escala
+        });
+        MessageBox.Show("Configuração de tela e escala aplicada com sucesso!", "Tela & Resolução", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private void BtnRestaurarTela_Click(object sender, RoutedEventArgs e)
+    {
+        var padrao = new DisplayConfig { ModoResolucao = "Auto", EscalaUi = 0 };
+        DisplaySettingsService.SalvarConfig(padrao);
+        CarregarConfigTela();
+        MessageBox.Show("Modo Automático restaurado!", "Tela & Resolução", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }

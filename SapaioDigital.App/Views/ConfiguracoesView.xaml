@@ -194,5 +194,45 @@
                 </Border>
             </ScrollViewer>
         </TabItem>
+
+        <!-- ABA 4: TELA & RESOLUÇÃO -->
+        <TabItem Header="Tela &amp; Resolução">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                <Border MaxWidth="640" HorizontalAlignment="Left" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="24" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Ajuste de Resolução e Escala da Tela" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,6"/>
+                        <TextBlock Text="Escolha como o sistema deve se adaptar ao tamanho do seu monitor. No modo Automático, a escala e os limites são ajustados sozinhos para telas menores ou maiores." TextWrapping="Wrap" FontSize="12.5" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,14"/>
+
+                        <TextBlock x:Name="TxtResolucaoAtual" Text="Área útil detectada: -" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource PrimaryLinkBrush}" Margin="0,0,0,14"/>
+
+                        <TextBlock Text="Resolução / Tamanho da Janela" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="CmbModoResolucao" MinHeight="36" Margin="0,0,0,12">
+                            <ComboBoxItem Content="Automático (Ajustar à Tela — Recomendado)" Tag="Auto"/>
+                            <ComboBoxItem Content="Compacta (1280 × 720)" Tag="1280x720"/>
+                            <ComboBoxItem Content="Notebook Padrão (1366 × 768)" Tag="1366x768"/>
+                            <ComboBoxItem Content="HD+ (1600 × 900)" Tag="1600x900"/>
+                            <ComboBoxItem Content="Full HD (1920 × 1080)" Tag="1920x1080"/>
+                            <ComboBoxItem Content="Sempre Maximizado (Tela Cheia)" Tag="Maximizado"/>
+                        </ComboBox>
+
+                        <TextBlock Text="Escala / Zoom da Interface (Letras e Campos)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="CmbEscalaUi" MinHeight="36" Margin="0,0,0,18">
+                            <ComboBoxItem Content="Automática (Ideal para a tela atual)" Tag="0"/>
+                            <ComboBoxItem Content="85% — Mais espaço em telas pequenas" Tag="0.85"/>
+                            <ComboBoxItem Content="90% — Compacto" Tag="0.90"/>
+                            <ComboBoxItem Content="95% — Levemente reduzido" Tag="0.95"/>
+                            <ComboBoxItem Content="100% — Tamanho padrão" Tag="1.00"/>
+                            <ComboBoxItem Content="110% — Letras e botões maiores" Tag="1.10"/>
+                            <ComboBoxItem Content="115% — Máxima visibilidade" Tag="1.15"/>
+                        </ComboBox>
+
+                        <WrapPanel>
+                            <Button Content="Aplicar e Salvar" Style="{StaticResource PrimaryButton}" Click="BtnAplicarTela_Click" Margin="0,0,8,6"/>
+                            <Button Content="Restaurar Automático" Style="{StaticResource SecondaryButton}" Click="BtnRestaurarTela_Click" Margin="0,0,0,6"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+        </TabItem>
     </TabControl>
 </UserControl>

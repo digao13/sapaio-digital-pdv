@@ -29,7 +29,23 @@ public partial class MainWindow : Window
         TxtDataHoraTopo.Text = DateTime.Now.ToString("dd/MM/yyyy  HH:mm:ss");
 
         NavegarParaPdv();
-        Loaded += async (_, _) => await VerificarAtualizacaoSilenciosaAsync();
+        DisplaySettingsService.ConfiguracaoAlterada += OnDisplayConfigAlterada;
+        Loaded += async (_, _) =>
+        {
+            DisplaySettingsService.AplicarNaJanela(this, RootGrid, ajustarTamanhoJanela: true);
+            await VerificarAtualizacaoSilenciosaAsync();
+        };
+        SizeChanged += (_, _) =>
+        {
+            if (IsLoaded)
+                DisplaySettingsService.AplicarNaJanela(this, RootGrid, ajustarTamanhoJanela: false);
+        };
+        Closed += (_, _) => DisplaySettingsService.ConfiguracaoAlterada -= OnDisplayConfigAlterada;
+    }
+
+    private void OnDisplayConfigAlterada()
+    {
+        DisplaySettingsService.AplicarNaJanela(this, RootGrid, ajustarTamanhoJanela: true);
     }
 
     private async System.Threading.Tasks.Task VerificarAtualizacaoSilenciosaAsync()
