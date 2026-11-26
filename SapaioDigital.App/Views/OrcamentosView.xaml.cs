@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,6 +19,7 @@ public partial class OrcamentosView : UserControl
     public OrcamentosView()
     {
         InitializeComponent();
+        InputValidator.AplicarSomenteDecimal(TxtValor);
         CarregarLoja();
         CarregarClientes();
         CarregarOrcamentos();

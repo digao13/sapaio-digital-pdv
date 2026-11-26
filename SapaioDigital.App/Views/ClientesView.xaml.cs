@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using SapaioDigital.App.Data;
+using SapaioDigital.App.Helpers;
 using SapaioDigital.App.Models;
 
 namespace SapaioDigital.App.Views;
@@ -13,6 +14,7 @@ public partial class ClientesView : UserControl
     public ClientesView()
     {
         InitializeComponent();
+        InputValidator.AplicarSomenteTelefone(TxtTelefone);
         CarregarClientes();
     }
 
@@ -46,9 +48,14 @@ public partial class ClientesView : UserControl
 
     private void BtnSalvar_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(TxtNome.Text) || string.IsNullOrWhiteSpace(TxtTelefone.Text) || string.IsNullOrWhiteSpace(TxtEndereco.Text))
+        if (string.IsNullOrWhiteSpace(TxtNome.Text) || string.IsNullOrWhiteSpace(TxtEndereco.Text))
         {
-            MessageBox.Show("Preencha Nome, Telefone/WhatsApp e Endereço.", "Campos obrigatórios", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Preencha Nome e Endereço.", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        if (!InputValidator.TelefoneValido(TxtTelefone.Text))
+        {
+            MessageBox.Show("Informe um Telefone / WhatsApp válido (mínimo 8 dígitos).", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using SapaioDigital.App.Data;
 using SapaioDigital.App.Helpers;
+using SapaioDigital.App.Services;
 using SapaioDigital.App.Views;
 
 namespace SapaioDigital.App;
@@ -28,7 +29,12 @@ public partial class App : Application
         var loja = DatabaseService.ObterLojaConfig();
         bool precisaOnboarding = loja == null || !loja.Configurada || !DatabaseService.ExisteAlgumUsuario();
 
-        if (precisaOnboarding)
+        if (!precisaOnboarding)
+        {
+            // Backup diário automático na primeira abertura do sistema
+            try { BackupService.ExecutarBackupDiarioSeNecessario(); } catch { }
+        }
+        else
         {
             var onboarding = new OnboardingWindow();
             if (onboarding.ShowDialog() != true)

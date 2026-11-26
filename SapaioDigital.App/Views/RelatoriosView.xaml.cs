@@ -62,6 +62,28 @@ public partial class RelatoriosView : UserControl
         }
     }
 
+    private void BtnReimprimirA4_Click(object sender, RoutedEventArgs e)
+    {
+        if (GridVendas.SelectedItem is not Venda v)
+        {
+            MessageBox.Show("Selecione uma venda na tabela.", "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var vendaCompleta = DatabaseService.ObterVendaCompleta(v.Id);
+        if (vendaCompleta == null) return;
+
+        var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig() ?? new LojaConfig { RazaoSocial = "Sapaio Digital" };
+        try
+        {
+            PdfVendaService.GerarComprovanteA4Pdf(vendaCompleta, loja, abrirAposGerar: true);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Erro ao gerar PDF A4: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private void BtnReimprimirOs_Click(object sender, RoutedEventArgs e)
     {
         if (GridOrcamentos.SelectedItem is not Orcamento os)

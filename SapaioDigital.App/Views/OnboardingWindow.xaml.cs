@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using SapaioDigital.App.Data;
+using SapaioDigital.App.Helpers;
 using SapaioDigital.App.Models;
 
 namespace SapaioDigital.App.Views;
@@ -16,6 +17,7 @@ public partial class OnboardingWindow : Window
     public OnboardingWindow()
     {
         InitializeComponent();
+        InputValidator.AplicarSomenteTelefone(TxtTelefone);
         _precisaCriarAdmin = !DatabaseService.ExisteAlgumUsuario();
         PanelAdmin.Visibility = _precisaCriarAdmin ? Visibility.Visible : Visibility.Collapsed;
 

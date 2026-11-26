@@ -15,10 +15,13 @@ public partial class ConfiguracoesView : UserControl
 {
     private string _logoPath = "";
     private string _downloadUrl = "";
+    private bool _carregandoBackup;
 
     public ConfiguracoesView()
     {
         InitializeComponent();
+        InputValidator.AplicarSomenteTelefone(TxtTelefone);
+
         var loja = SessaoAtual.Loja ?? DatabaseService.ObterLojaConfig();
         if (loja != null)
         {
@@ -29,7 +32,19 @@ public partial class ConfiguracoesView : UserControl
         }
 
         TxtVersao.Text = $"Versão instalada: {GitHubUpdaterService.ObterVersaoAtual()}";
-        TxtCaminhoBanco.Text = AppPaths.DatabasePath;
+        CarregarConfigBackup();
+    }
+
+    private void CarregarConfigBackup()
+    {
+        _carregandoBackup = true;
+        var cfg = BackupService.CarregarConfig();
+        TxtPastaBackup.Text = cfg.PastaDestino;
+        ChkBackupDiario.IsChecked = cfg.BackupDiarioAutomatico;
+        TxtUltimoBackup.Text = string.IsNullOrWhiteSpace(cfg.UltimaDataBackup)
+            ? "Último backup: ainda não realizado"
+            : $"Último backup ({cfg.Plataforma}): {cfg.UltimaDataBackup}\n{cfg.UltimoArquivoBackup}";
+        _carregandoBackup = false;
     }
 
     private void CarregarPreview(string path)
@@ -59,9 +74,9 @@ public partial class ConfiguracoesView : UserControl
 
     private void BtnSalvarLoja_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(TxtRazaoSocial.Text) || string.IsNullOrWhiteSpace(TxtTelefone.Text) || string.IsNullOrWhiteSpace(_logoPath))
+        if (string.IsNullOrWhiteSpace(TxtRazaoSocial.Text) || !InputValidator.TelefoneValido(TxtTelefone.Text) || string.IsNullOrWhiteSpace(_logoPath))
         {
-            MessageBox.Show("Preencha Razão Social, Telefone e selecione uma Logo.", "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Preencha Razão Social, Telefone válido (mín. 8 dígitos) e selecione uma Logo.", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -75,11 +90,75 @@ public partial class ConfiguracoesView : UserControl
         MessageBox.Show("Dados da loja atualizados com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
+    private void DefinirDestinoBackup(string pasta, string plataforma)
+    {
+        var cfg = BackupService.CarregarConfig();
+        cfg.PastaDestino = pasta;
+        cfg.Plataforma = plataforma;
+        BackupService.SalvarConfig(cfg);
+        CarregarConfigBackup();
+        MessageBox.Show($"Destino de backup definido para {plataforma}:\n{pasta}", "Backup em Nuvem / Local", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private void BtnOneDrive_Click(object sender, RoutedEventArgs e)
+    {
+        var dir = BackupService.DetectarPastaOneDrive();
+        if (dir == null)
+        {
+            MessageBox.Show("Pasta do OneDrive não encontrada neste PC. Verifique se o OneDrive está instalado e logado no Windows, ou selecione manualmente em 'Escolher Pasta Local...'.", "OneDrive", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        DefinirDestinoBackup(dir, "OneDrive");
+    }
+
+    private void BtnDropbox_Click(object sender, RoutedEventArgs e)
+    {
+        var dir = BackupService.DetectarPastaDropbox();
+        if (dir == null)
+        {
+            MessageBox.Show("Pasta do Dropbox não encontrada neste PC. Verifique se o Dropbox está instalado e logado no Windows, ou selecione manualmente em 'Escolher Pasta Local...'.", "Dropbox", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        DefinirDestinoBackup(dir, "Dropbox");
+    }
+
+    private void BtnGoogleDrive_Click(object sender, RoutedEventArgs e)
+    {
+        var dir = BackupService.DetectarPastaGoogleDrive();
+        if (dir == null)
+        {
+            MessageBox.Show("Pasta do Google Drive não encontrada. Instale o 'Google Drive para Desktop' no Windows ou selecione a pasta sincronizada em 'Escolher Pasta Local...'.", "Google Drive", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        DefinirDestinoBackup(dir, "Google Drive");
+    }
+
+    private void BtnEscolherPasta_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new OpenFolderDialog
+        {
+            Title = "Selecione a pasta de destino para os backups (Local ou Nuvem)"
+        };
+        if (dlg.ShowDialog() == true)
+        {
+            DefinirDestinoBackup(dlg.FolderName, "Pasta Personalizada");
+        }
+    }
+
+    private void ChkBackupDiario_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_carregandoBackup) return;
+        var cfg = BackupService.CarregarConfig();
+        cfg.BackupDiarioAutomatico = ChkBackupDiario.IsChecked == true;
+        BackupService.SalvarConfig(cfg);
+    }
+
     private void BtnBackup_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            string path = DatabaseService.CriarBackupSeguro("manual");
+            string path = BackupService.ExecutarBackup("manual");
+            CarregarConfigBackup();
             MessageBox.Show($"Backup criado com sucesso em:\n{path}", "Backup SQLite", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)

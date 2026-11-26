@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using SapaioDigital.App.Data;
@@ -16,13 +15,15 @@ public partial class ProdutosView : UserControl
     public ProdutosView()
     {
         InitializeComponent();
+        InputValidator.AplicarSomenteInteiro(TxtCodigoBarras);
+        InputValidator.AplicarSomenteInteiro(TxtQuantidade);
+        InputValidator.AplicarSomenteInteiro(TxtQtdMov);
+        InputValidator.AplicarSomenteDecimal(TxtPrecoVenda);
+        InputValidator.AplicarSomenteDecimal(TxtPrecoCusto);
         CarregarProdutos();
     }
 
-    private void CarregarProdutos()
-    {
-        GridProdutos.ItemsSource = DatabaseService.ListarProdutos(TxtBusca.Text);
-    }
+    private void CarregarProdutos() => GridProdutos.ItemsSource = DatabaseService.ListarProdutos(TxtBusca.Text);
 
     private void TxtBusca_TextChanged(object sender, TextChangedEventArgs e) => CarregarProdutos();
 
@@ -34,7 +35,7 @@ public partial class ProdutosView : UserControl
         TxtNome.Text = p.Nome;
         TxtCodigoBarras.Text = p.CodigoBarras ?? "";
         TxtQuantidade.Text = p.Quantidade.ToString();
-        TxtQuantidade.IsEnabled = false; // Estoque existente altera via Entrada/Saída
+        TxtQuantidade.IsEnabled = false;
         TxtUnidade.Text = p.Unidade;
         TxtPrecoVenda.Text = p.PrecoVenda.ToString("N2");
         TxtPrecoCusto.Text = p.PrecoCusto.ToString("N2");
@@ -60,20 +61,24 @@ public partial class ProdutosView : UserControl
     {
         if (string.IsNullOrWhiteSpace(TxtNome.Text))
         {
-            MessageBox.Show("Informe o nome do produto.", "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Informe o nome do produto.", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
         if (!int.TryParse(TxtQuantidade.Text, out int qtd) || qtd < 0)
         {
-            MessageBox.Show("Quantidade inválida.", "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Quantidade deve ser um número inteiro válido (>= 0).", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        if (!decimal.TryParse(TxtPrecoVenda.Text, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal pv) || pv < 0)
+        if (!InputValidator.TryParseDecimalPtBr(TxtPrecoVenda.Text, out decimal pv) || pv < 0)
         {
-            MessageBox.Show("Preço de venda inválido.", "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Preço de venda inválido.", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        decimal.TryParse(TxtPrecoCusto.Text, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal pc);
+        if (!InputValidator.TryParseDecimalPtBr(TxtPrecoCusto.Text, out decimal pc) || pc < 0)
+        {
+            MessageBox.Show("Preço de custo inválido.", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
 
         try
         {
@@ -81,7 +86,7 @@ public partial class ProdutosView : UserControl
             prod.Nome = TxtNome.Text.Trim();
             prod.CodigoBarras = string.IsNullOrWhiteSpace(TxtCodigoBarras.Text) ? null : TxtCodigoBarras.Text.Trim();
             if (prod.Id == 0) prod.Quantidade = qtd;
-            prod.Unidade = TxtUnidade.Text.Trim();
+            prod.Unidade = string.IsNullOrWhiteSpace(TxtUnidade.Text) ? "UN" : TxtUnidade.Text.Trim().ToUpperInvariant();
             prod.PrecoVenda = pv;
             prod.PrecoCusto = pc;
 
@@ -116,17 +121,14 @@ public partial class ProdutosView : UserControl
         PanelMovimentacao.Visibility = Visibility.Visible;
     }
 
-    private void BtnCancelarMov_Click(object sender, RoutedEventArgs e)
-    {
-        PanelMovimentacao.Visibility = Visibility.Collapsed;
-    }
+    private void BtnCancelarMov_Click(object sender, RoutedEventArgs e) => PanelMovimentacao.Visibility = Visibility.Collapsed;
 
     private void BtnConfirmarMov_Click(object sender, RoutedEventArgs e)
     {
         if (GridProdutos.SelectedItem is not Produto p) return;
         if (!int.TryParse(TxtQtdMov.Text, out int qtd) || qtd <= 0)
         {
-            MessageBox.Show("Informe uma quantidade válida maior que zero.", "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Informe uma quantidade inteira maior que zero.", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 

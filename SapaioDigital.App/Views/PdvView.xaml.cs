@@ -1,7 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -23,12 +22,22 @@ public partial class PdvView : UserControl
     {
         InitializeComponent();
         GridCarrinho.ItemsSource = _carrinho;
+        InputValidator.AplicarSomenteInteiro(TxtQtdAdd);
+        InputValidator.AplicarSomenteDecimal(TxtDesconto);
+        InputValidator.AplicarSomenteDecimal(TxtRecebido);
+
         CarregarLoja();
         CarregarClientes();
         CarregarImpressoras();
         AtualizarSugestoes();
         AtualizarTotais();
         Loaded += (_, _) => TxtBuscaProduto.Focus();
+    }
+
+    private void CmbPadraoImpressao_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (PanelImpressoraTermica == null) return;
+        PanelImpressoraTermica.Visibility = CmbPadraoImpressao.SelectedIndex == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void CarregarLoja()
@@ -59,9 +68,8 @@ public partial class PdvView : UserControl
     private void CarregarImpressoras()
     {
         foreach (string printer in PrinterSettings.InstalledPrinters)
-        {
             CmbImpressora.Items.Add(printer);
-        }
+
         var padrao = new PrinterSettings().PrinterName;
         if (!string.IsNullOrWhiteSpace(padrao) && CmbImpressora.Items.Contains(padrao))
             CmbImpressora.SelectedItem = padrao;
@@ -69,19 +77,13 @@ public partial class PdvView : UserControl
             CmbImpressora.SelectedIndex = 0;
     }
 
-    private void AtualizarSugestoes()
-    {
-        GridSugestoes.ItemsSource = DatabaseService.ListarProdutos(TxtBuscaProduto.Text);
-    }
+    private void AtualizarSugestoes() => GridSugestoes.ItemsSource = DatabaseService.ListarProdutos(TxtBuscaProduto.Text);
 
     private void TxtBuscaProduto_TextChanged(object sender, TextChangedEventArgs e) => AtualizarSugestoes();
 
     private void TxtBuscaProduto_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter)
-        {
-            AdicionarPorBusca();
-        }
+        if (e.Key == Key.Enter) AdicionarPorBusca();
     }
 
     private void BtnAdicionar_Click(object sender, RoutedEventArgs e) => AdicionarPorBusca();
@@ -160,8 +162,8 @@ public partial class PdvView : UserControl
     {
         if (TxtSubtotal == null) return;
         decimal subtotal = _carrinho.Sum(x => x.Subtotal);
-        decimal.TryParse(TxtDesconto.Text, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal desconto);
-        decimal.TryParse(TxtRecebido.Text, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal recebido);
+        InputValidator.TryParseDecimalPtBr(TxtDesconto.Text, out decimal desconto);
+        InputValidator.TryParseDecimalPtBr(TxtRecebido.Text, out decimal recebido);
 
         decimal total = Math.Max(0, subtotal - desconto);
         decimal troco = recebido > total ? recebido - total : 0;
@@ -188,8 +190,17 @@ public partial class PdvView : UserControl
         }
 
         decimal subtotal = _carrinho.Sum(x => x.Subtotal);
-        decimal.TryParse(TxtDesconto.Text, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal desconto);
-        decimal.TryParse(TxtRecebido.Text, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal recebido);
+        if (!InputValidator.TryParseDecimalPtBr(TxtDesconto.Text, out decimal desconto) || desconto < 0)
+        {
+            MessageBox.Show("Valor de desconto inválido.", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        if (!InputValidator.TryParseDecimalPtBr(TxtRecebido.Text, out decimal recebido) || recebido < 0)
+        {
+            MessageBox.Show("Valor recebido inválido.", "Validação", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
         decimal total = Math.Max(0, subtotal - desconto);
         decimal troco = recebido > total ? recebido - total : 0;
 
@@ -221,11 +232,14 @@ public partial class PdvView : UserControl
             {
                 try
                 {
-                    CupomNaoFiscalService.ImprimirCupom(venda, loja, CmbImpressora.SelectedItem?.ToString());
+                    if (CmbPadraoImpressao.SelectedIndex == 1)
+                        PdfVendaService.GerarComprovanteA4Pdf(venda, loja, abrirAposGerar: true);
+                    else
+                        CupomNaoFiscalService.ImprimirCupom(venda, loja, CmbImpressora.SelectedItem?.ToString());
                 }
                 catch (Exception impEx)
                 {
-                    MessageBox.Show($"Venda #{venda.Id} concluída e estoque baixado, mas houve erro ao imprimir na impressora:\n{impEx.Message}", "Aviso de Impressão", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show($"Venda #{venda.Id} concluída e estoque baixado, mas houve erro ao imprimir:\n{impEx.Message}", "Aviso de Impressão", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
 
