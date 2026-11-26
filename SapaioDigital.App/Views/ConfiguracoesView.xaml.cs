@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -39,11 +41,23 @@ public partial class ConfiguracoesView : UserControl
     {
         _carregandoBackup = true;
         var cfg = BackupService.CarregarConfig();
+        TxtPlataformaAtiva.Text = cfg.Plataforma;
         TxtPastaBackup.Text = cfg.PastaDestino;
         ChkBackupDiario.IsChecked = cfg.BackupDiarioAutomatico;
         TxtUltimoBackup.Text = string.IsNullOrWhiteSpace(cfg.UltimaDataBackup)
             ? "Último backup: ainda não realizado"
-            : $"Último backup ({cfg.Plataforma}): {cfg.UltimaDataBackup}\n{cfg.UltimoArquivoBackup}";
+            : $"Último backup ({cfg.Plataforma}): {cfg.UltimaDataBackup}";
+
+        var status = BackupService.ObterStatusProvedores();
+        var one = status.First(s => s.Nome == "OneDrive");
+        var gd = status.First(s => s.Nome == "Google Drive");
+        var db = status.First(s => s.Nome == "Dropbox");
+
+        TxtStatusOneDrive.Text = $"OneDrive: {(one.Disponivel ? "Conectado" : "Não encontrado")}";
+        TxtStatusGoogleDrive.Text = $"Google Drive: {(gd.Disponivel ? "Conectado" : "Não encontrado")}";
+        TxtStatusDropbox.Text = $"Dropbox: {(db.Disponivel ? "Conectado" : "Não encontrado")}";
+
+        GridBackups.ItemsSource = BackupService.ListarBackupsDisponiveis();
         _carregandoBackup = false;
     }
 
@@ -92,12 +106,13 @@ public partial class ConfiguracoesView : UserControl
 
     private void DefinirDestinoBackup(string pasta, string plataforma)
     {
+        Directory.CreateDirectory(pasta);
         var cfg = BackupService.CarregarConfig();
         cfg.PastaDestino = pasta;
         cfg.Plataforma = plataforma;
         BackupService.SalvarConfig(cfg);
         CarregarConfigBackup();
-        MessageBox.Show($"Destino de backup definido para {plataforma}:\n{pasta}", "Backup em Nuvem / Local", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show($"Destino de backup definido para {plataforma}:\n{pasta}", "Backup Configurado", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void BtnOneDrive_Click(object sender, RoutedEventArgs e)
@@ -105,7 +120,7 @@ public partial class ConfiguracoesView : UserControl
         var dir = BackupService.DetectarPastaOneDrive();
         if (dir == null)
         {
-            MessageBox.Show("Pasta do OneDrive não encontrada neste PC. Verifique se o OneDrive está instalado e logado no Windows, ou selecione manualmente em 'Escolher Pasta Local...'.", "OneDrive", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("OneDrive não detectado neste PC. Faça login no OneDrive do Windows ou use 'Escolher Pasta Local...'.", "OneDrive", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         DefinirDestinoBackup(dir, "OneDrive");
@@ -116,7 +131,7 @@ public partial class ConfiguracoesView : UserControl
         var dir = BackupService.DetectarPastaDropbox();
         if (dir == null)
         {
-            MessageBox.Show("Pasta do Dropbox não encontrada neste PC. Verifique se o Dropbox está instalado e logado no Windows, ou selecione manualmente em 'Escolher Pasta Local...'.", "Dropbox", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Dropbox não detectado neste PC. Instale o Dropbox ou use 'Escolher Pasta Local...'.", "Dropbox", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         DefinirDestinoBackup(dir, "Dropbox");
@@ -127,7 +142,7 @@ public partial class ConfiguracoesView : UserControl
         var dir = BackupService.DetectarPastaGoogleDrive();
         if (dir == null)
         {
-            MessageBox.Show("Pasta do Google Drive não encontrada. Instale o 'Google Drive para Desktop' no Windows ou selecione a pasta sincronizada em 'Escolher Pasta Local...'.", "Google Drive", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Google Drive não detectado. Instale o 'Google Drive para Desktop' no Windows ou selecione a pasta em 'Escolher Pasta Local...'.", "Google Drive", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         DefinirDestinoBackup(dir, "Google Drive");
@@ -164,6 +179,38 @@ public partial class ConfiguracoesView : UserControl
         catch (Exception ex)
         {
             MessageBox.Show($"Erro ao criar backup: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void BtnAbrirPastaBackup_Click(object sender, RoutedEventArgs e)
+    {
+        var pasta = BackupService.CarregarConfig().PastaDestino;
+        Directory.CreateDirectory(pasta);
+        Process.Start(new ProcessStartInfo(pasta) { UseShellExecute = true });
+    }
+
+    private void BtnRestaurarBackup_Click(object sender, RoutedEventArgs e)
+    {
+        if (GridBackups.SelectedItem is not BackupArquivoInfo item)
+        {
+            MessageBox.Show("Selecione um backup na lista para restaurar.", "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            $"Deseja restaurar o banco de dados para o backup '{item.NomeArquivo}' ({item.DataCriacao:dd/MM/yyyy HH:mm})?\n\nUm backup de segurança do estado atual será criado antes da restauração.",
+            "Confirmar Restauração", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            BackupService.RestaurarBackup(item.CaminhoCompleto);
+            MessageBox.Show("Backup restaurado com sucesso! Recomenda-se reiniciar o aplicativo.", "Restauração Concluída", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Erro ao restaurar backup: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

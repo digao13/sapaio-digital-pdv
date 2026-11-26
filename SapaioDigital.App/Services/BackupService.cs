@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using Microsoft.Data.Sqlite;
 using SapaioDigital.App.Data;
 using SapaioDigital.App.Helpers;
 
@@ -11,13 +14,18 @@ public class BackupConfig
     public string PastaDestino { get; set; } = AppPaths.BackupsDir;
     public string Plataforma { get; set; } = "Local";
     public bool BackupDiarioAutomatico { get; set; } = true;
-    public string UltimaDataBackup { get; set; } = ""; // yyyy-MM-dd
+    public int ManterUltimosBackups { get; set; } = 30;
+    public string UltimaDataBackup { get; set; } = "";
     public string UltimoArquivoBackup { get; set; } = "";
 }
 
+public record ProvedorNuvemStatus(string Nome, bool Disponivel, string? PastaSugerida, string StatusTexto);
+
+public record BackupArquivoInfo(string NomeArquivo, DateTime DataCriacao, string TamanhoFormatado, string CaminhoCompleto);
+
 /// <summary>
 /// Gerencia backups locais e em nuvem via pastas sincronizadas (OneDrive, Dropbox, Google Drive)
-/// sem necessidade de autenticação OAuth ou chaves de API.
+/// com retenção automática, histórico e restauração em 1 clique.
 /// </summary>
 public static class BackupService
 {
@@ -44,6 +52,20 @@ public static class BackupService
         AppPaths.EnsureDirectories();
         string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(ConfigPath, json);
+    }
+
+    public static List<ProvedorNuvemStatus> ObterStatusProvedores()
+    {
+        var one = DetectarPastaOneDrive();
+        var gdrive = DetectarPastaGoogleDrive();
+        var drop = DetectarPastaDropbox();
+
+        return new List<ProvedorNuvemStatus>
+        {
+            new("OneDrive", one != null, one, one != null ? $"Sincronizado ({one})" : "Não encontrado neste PC"),
+            new("Google Drive", gdrive != null, gdrive, gdrive != null ? $"Sincronizado ({gdrive})" : "Instale o Google Drive para Desktop"),
+            new("Dropbox", drop != null, drop, drop != null ? $"Sincronizado ({drop})" : "Não encontrado neste PC")
+        };
     }
 
     public static string? DetectarPastaOneDrive()
@@ -119,6 +141,12 @@ public static class BackupService
             File.Copy(backupInterno, destinoFinal, overwrite: true);
         }
 
+        if (config.ManterUltimosBackups > 0)
+        {
+            LimparBackupsAntigos(pastaDestino, config.ManterUltimosBackups);
+            LimparBackupsAntigos(AppPaths.BackupsDir, config.ManterUltimosBackups);
+        }
+
         config.UltimaDataBackup = DateTime.Today.ToString("yyyy-MM-dd");
         config.UltimoArquivoBackup = destinoFinal;
         SalvarConfig(config);
@@ -136,5 +164,63 @@ public static class BackupService
             return;
 
         ExecutarBackup("diario");
+    }
+
+    public static List<BackupArquivoInfo> ListarBackupsDisponiveis()
+    {
+        var config = CarregarConfig();
+        var pasta = string.IsNullOrWhiteSpace(config.PastaDestino) ? AppPaths.BackupsDir : config.PastaDestino;
+        if (!Directory.Exists(pasta)) return new List<BackupArquivoInfo>();
+
+        return new DirectoryInfo(pasta)
+            .GetFiles("*.db")
+            .OrderByDescending(f => f.CreationTime)
+            .Select(f => new BackupArquivoInfo(
+                f.Name,
+                f.CreationTime,
+                FormatarTamanho(f.Length),
+                f.FullName))
+            .ToList();
+    }
+
+    public static void RestaurarBackup(string caminhoBackup)
+    {
+        if (!File.Exists(caminhoBackup) || new FileInfo(caminhoBackup).Length == 0)
+            throw new FileNotFoundException("Arquivo de backup inválido ou não encontrado.", caminhoBackup);
+
+        // Faz backup preventivo do banco atual antes de restaurar
+        DatabaseService.CriarBackupSeguro("pre_restauracao");
+
+        SqliteConnection.ClearAllPools();
+        File.Copy(caminhoBackup, AppPaths.DatabasePath, overwrite: true);
+        DatabaseService.Initialize();
+
+        var loja = DatabaseService.ObterLojaConfig();
+        if (loja != null)
+        {
+            SessaoAtual.Loja = loja;
+            SessaoAtual.NotificarLojaAtualizada();
+        }
+    }
+
+    private static void LimparBackupsAntigos(string pasta, int manter)
+    {
+        try
+        {
+            if (!Directory.Exists(pasta)) return;
+            var arquivos = new DirectoryInfo(pasta).GetFiles("sapaio_*.db").OrderByDescending(f => f.CreationTime).Skip(manter);
+            foreach (var arq in arquivos)
+            {
+                arq.Delete();
+            }
+        }
+        catch { }
+    }
+
+    private static string FormatarTamanho(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:N1} KB";
+        return $"{bytes / (1024.0 * 1024.0):N2} MB";
     }
 }
