@@ -70,11 +70,17 @@ public partial class PdvView : UserControl
         foreach (string printer in PrinterSettings.InstalledPrinters)
             CmbImpressora.Items.Add(printer);
 
-        var padrao = new PrinterSettings().PrinterName;
+        var cfg = PrinterSettingsService.CarregarConfig();
+        string padrao = !string.IsNullOrWhiteSpace(cfg.ImpressoraPadrao)
+            ? cfg.ImpressoraPadrao
+            : new PrinterSettings().PrinterName;
+
         if (!string.IsNullOrWhiteSpace(padrao) && CmbImpressora.Items.Contains(padrao))
             CmbImpressora.SelectedItem = padrao;
         else if (CmbImpressora.Items.Count > 0)
             CmbImpressora.SelectedIndex = 0;
+
+        ChkImprimirCupom.IsChecked = cfg.ImprimirAutomaticamente;
     }
 
     private void AtualizarSugestoes()

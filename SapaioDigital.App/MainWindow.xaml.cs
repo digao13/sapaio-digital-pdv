@@ -156,8 +156,47 @@ public partial class MainWindow : Window
 
     private void NavConfiguracoes_Click(object sender, RoutedEventArgs e)
     {
-        TxtTituloPagina.Text = "Dados da Loja, Backup e Atualização";
+        TxtTituloPagina.Text = "Configurações do Sistema";
         MainContent.Content = new ConfiguracoesView();
+    }
+
+    private async void NavAtualizacoes_Click(object sender, RoutedEventArgs e)
+    {
+        BtnNavUpd.IsEnabled = false;
+        LblNavUpd.Text = "Verificando...";
+        try
+        {
+            var info = _updateInfo ?? await GitHubUpdaterService.VerificarAtualizacaoAsync();
+            if (info.Disponivel && !string.IsNullOrWhiteSpace(info.DownloadUrl))
+            {
+                _updateInfo = info;
+                var resp = MessageBox.Show(
+                    $"Nova versão disponível: v{info.NovaVersao}\n\nDeseja baixar e instalar agora?\n(Um backup automático do banco será feito antes da atualização.)",
+                    "Atualização Disponível",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+                if (resp == MessageBoxResult.Yes)
+                {
+                    LblNavUpd.Text = "Baixando...";
+                    await GitHubUpdaterService.BaixarEAplicarAtualizacaoAsync(info.DownloadUrl);
+                    Application.Current.Shutdown();
+                    return;
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Você já está na versão mais recente (v{info.VersaoAtual}).", "Atualizações", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Erro ao verificar/atualizar: {ex.Message}", "Atualizações", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            LblNavUpd.Text = "Atualizações";
+            BtnNavUpd.IsEnabled = true;
+        }
     }
 
     private async void BtnUpdateDisponivel_Click(object sender, RoutedEventArgs e)

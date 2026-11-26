@@ -177,11 +177,11 @@
         </TabItem>
 
         <!-- ABA 3: ATUALIZAÇÕES GITHUB -->
-        <TabItem Header="Atualizações (GitHub)">
+        <TabItem Header="Atualizações">
             <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
                 <Border MaxWidth="640" HorizontalAlignment="Left" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="24" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                     <StackPanel>
-                        <TextBlock Text="Atualização Automática via GitHub" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBlock Text="Atualização do Sistema" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
                         <TextBlock x:Name="TxtVersao" Text="Versão instalada: 1.4.0" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryLinkBrush}" Margin="0,0,0,4"/>
                         <TextBlock Text="Repositório: digao13/sapaio-digital-pdv" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,12"/>
                         <TextBlock x:Name="TxtStatusUpdate" Text="Verifique se há novas versões no GitHub para atualizar o sistema preservando seu banco de dados." TextWrapping="Wrap" Margin="0,0,0,16"/>
@@ -230,6 +230,47 @@
                             <Button Content="Aplicar e Salvar" Style="{StaticResource PrimaryButton}" Click="BtnAplicarTela_Click" Margin="0,0,8,6"/>
                             <Button Content="Restaurar Automático" Style="{StaticResource SecondaryButton}" Click="BtnRestaurarTela_Click" Margin="0,0,0,6"/>
                         </WrapPanel>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+        </TabItem>
+        <!-- ABA 5: IMPRESSORA -->
+        <TabItem Header="Impressora">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                <Border MaxWidth="640" HorizontalAlignment="Left" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="24" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Parâmetros Padrão de Impressora" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,6"/>
+                        <TextBlock Text="Defina a impressora padrão de cupons, formato do papel e comportamento automático ao finalizar vendas no PDV." TextWrapping="Wrap" FontSize="12.5" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16"/>
+
+                        <TextBlock Text="Impressora Padrão de Cupom" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="CmbImpressoraPadrao" MinHeight="36" Margin="0,0,0,12"/>
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Formato / Largura do Cupom" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                                <ComboBox x:Name="CmbFormatoCupom" MinHeight="36">
+                                    <ComboBoxItem Content="Térmica 80mm (Padrão)" Tag="80mm"/>
+                                    <ComboBoxItem Content="Térmica 58mm (Compacta)" Tag="58mm"/>
+                                    <ComboBoxItem Content="Recibo A4 (PDF)" Tag="A4"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Cópias / Vias Padrão" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                                <ComboBox x:Name="CmbCopiasPadrao" MinHeight="36">
+                                    <ComboBoxItem Content="1 via" Tag="1"/>
+                                    <ComboBoxItem Content="2 vias" Tag="2"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+
+                        <CheckBox x:Name="ChkAutoImprimirCupom" Content="Marcar 'Imprimir cupom' automaticamente no PDV ao abrir a tela" FontWeight="SemiBold" FontSize="12.5" Margin="0,4,0,18"/>
+
+                        <Button Content="Salvar Parâmetros de Impressora" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Click="BtnSalvarImpressora_Click"/>
                     </StackPanel>
                 </Border>
             </ScrollViewer>

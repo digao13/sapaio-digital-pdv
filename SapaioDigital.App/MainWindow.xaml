@@ -77,16 +77,16 @@
                                 <TextBlock x:Name="LblNavUsu" Text="Usuários" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="BtnNavCfg" ToolTip="Dados da Loja e Backup" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click">
+                        <Button x:Name="BtnNavCfg" ToolTip="Configurações e Parâmetros do Sistema" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE713;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                                <TextBlock x:Name="LblNavCfg" Text="Loja &amp; Backup" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="LblNavCfg" Text="Configurações" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="BtnNavUpd" ToolTip="Atualizações do GitHub" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click">
+                        <Button x:Name="BtnNavUpd" ToolTip="Verificar e instalar atualizações" Style="{StaticResource SidebarButton}" Click="NavAtualizacoes_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE895;" FontSize="15" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                                <TextBlock x:Name="LblNavUpd" Text="Atualizações (GitHub)" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="LblNavUpd" Text="Atualizações" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>

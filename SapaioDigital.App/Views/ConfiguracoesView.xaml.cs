@@ -37,6 +37,7 @@ public partial class ConfiguracoesView : UserControl
         TxtVersao.Text = $"Versão instalada: {GitHubUpdaterService.ObterVersaoAtual()}";
         CarregarConfigBackup();
         CarregarConfigTela();
+        CarregarConfigImpressora();
     }
 
     private void CarregarConfigBackup()
@@ -325,6 +326,42 @@ public partial class ConfiguracoesView : UserControl
         var padrao = new DisplayConfig { ModoResolucao = "Auto", EscalaUi = 0 };
         DisplaySettingsService.SalvarConfig(padrao);
         CarregarConfigTela();
+        CarregarConfigImpressora();
         MessageBox.Show("Modo Automático restaurado!", "Tela & Resolução", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private void CarregarConfigImpressora()
+    {
+        CmbImpressoraPadrao.Items.Clear();
+        CmbImpressoraPadrao.Items.Add("(Usar padrão do Windows)");
+        foreach (string printer in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
+            CmbImpressoraPadrao.Items.Add(printer);
+
+        var cfg = PrinterSettingsService.CarregarConfig();
+        if (!string.IsNullOrWhiteSpace(cfg.ImpressoraPadrao) && CmbImpressoraPadrao.Items.Contains(cfg.ImpressoraPadrao))
+            CmbImpressoraPadrao.SelectedItem = cfg.ImpressoraPadrao;
+        else
+            CmbImpressoraPadrao.SelectedIndex = 0;
+
+        SelecionarPorTag(CmbFormatoCupom, cfg.FormatoCupom);
+        SelecionarPorTag(CmbCopiasPadrao, cfg.CopiasPadrao.ToString());
+        ChkAutoImprimirCupom.IsChecked = cfg.ImprimirAutomaticamente;
+    }
+
+    private void BtnSalvarImpressora_Click(object sender, RoutedEventArgs e)
+    {
+        string impressora = CmbImpressoraPadrao.SelectedIndex <= 0 ? "" : (CmbImpressoraPadrao.SelectedItem?.ToString() ?? "");
+        string formato = (CmbFormatoCupom.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "80mm";
+        int.TryParse((CmbCopiasPadrao.SelectedItem as ComboBoxItem)?.Tag?.ToString(), out int copias);
+        if (copias <= 0) copias = 1;
+
+        PrinterSettingsService.SalvarConfig(new PrinterConfig
+        {
+            ImpressoraPadrao = impressora,
+            FormatoCupom = formato,
+            CopiasPadrao = copias,
+            ImprimirAutomaticamente = ChkAutoImprimirCupom.IsChecked == true
+        });
+        MessageBox.Show("Parâmetros de impressora salvos com sucesso!", "Impressora", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }
