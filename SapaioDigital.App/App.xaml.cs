@@ -16,6 +16,7 @@ public partial class App : Application
         try
         {
             DatabaseService.Initialize();
+            ThemeService.LoadSavedTheme();
         }
         catch (Exception ex)
         {
@@ -24,7 +25,6 @@ public partial class App : Application
             return;
         }
 
-        // 1. Verificar configuração obrigatória da loja e usuário inicial
         var loja = DatabaseService.ObterLojaConfig();
         bool precisaOnboarding = loja == null || !loja.Configurada || !DatabaseService.ExisteAlgumUsuario();
 
@@ -41,7 +41,6 @@ public partial class App : Application
 
         SessaoAtual.Loja = loja;
 
-        // 2. Tela de Login obrigatória
         var login = new LoginWindow();
         if (login.ShowDialog() != true || SessaoAtual.UsuarioLogado == null)
         {
@@ -49,7 +48,6 @@ public partial class App : Application
             return;
         }
 
-        // 3. Abre a janela principal
         var main = new MainWindow();
         MainWindow = main;
         ShutdownMode = ShutdownMode.OnMainWindowClose;

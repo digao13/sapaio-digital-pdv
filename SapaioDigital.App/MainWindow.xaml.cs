@@ -19,6 +19,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         AtualizarCabecalhoLoja();
         AtualizarUsuario();
+        AtualizarBotaoTema();
         TxtVersaoApp.Text = $"Versão {GitHubUpdaterService.ObterVersaoAtual()}";
         SessaoAtual.LojaAtualizada += AtualizarCabecalhoLoja;
 
@@ -28,6 +29,17 @@ public partial class MainWindow : Window
         TxtDataHoraTopo.Text = DateTime.Now.ToString("dd/MM/yyyy  HH:mm:ss");
 
         NavegarParaPdv();
+    }
+
+    private void AtualizarBotaoTema()
+    {
+        BtnToggleTema.Content = ThemeService.IsDark ? "☀️ Tema Claro" : "🌙 Tema Escuro";
+    }
+
+    private void BtnToggleTema_Click(object sender, RoutedEventArgs e)
+    {
+        ThemeService.ToggleTheme();
+        AtualizarBotaoTema();
     }
 
     private void BtnToggleSidebar_Click(object sender, RoutedEventArgs e)

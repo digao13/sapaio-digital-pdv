@@ -8,38 +8,38 @@
         </Grid.ColumnDefinitions>
 
         <!-- Lista de Produtos -->
-        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1">
+        <Border Grid.Column="0" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="16" Margin="0,0,14,0" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
             <DockPanel>
                 <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                    <TextBox x:Name="TxtBusca" Width="230" Margin="0,0,8,4" ToolTip="Buscar por nome ou código de barras" TextChanged="TxtBusca_TextChanged"/>
+                    <TextBox x:Name="TxtBusca" Width="230" Margin="0,0,8,4" ToolTip="Buscar por nome ou cÃ³digo de barras" TextChanged="TxtBusca_TextChanged"/>
                     <Button Content="+ Entrada Estoque" Style="{StaticResource SuccessButton}" Margin="0,0,8,4" Click="BtnEntrada_Click"/>
-                    <Button Content="- Saída Estoque" Style="{StaticResource DangerButton}" Margin="0,0,0,4" Click="BtnSaida_Click"/>
+                    <Button Content="- SaÃ­da Estoque" Style="{StaticResource DangerButton}" Margin="0,0,0,4" Click="BtnSaida_Click"/>
                 </WrapPanel>
 
                 <DataGrid x:Name="GridProdutos" SelectionChanged="GridProdutos_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="48"/>
                         <DataGridTextColumn Header="Nome do Produto" Binding="{Binding Nome}" Width="*" MinWidth="130"/>
-                        <DataGridTextColumn Header="Cód. Barras" Binding="{Binding CodigoBarras}" Width="120"/>
+                        <DataGridTextColumn Header="CÃ³d. Barras" Binding="{Binding CodigoBarras}" Width="120"/>
                         <DataGridTextColumn Header="Qtd" Binding="{Binding Quantidade}" Width="60"/>
                         <DataGridTextColumn Header="Unid." Binding="{Binding Unidade}" Width="50"/>
-                        <DataGridTextColumn Header="Preço Venda" Binding="{Binding PrecoVenda, StringFormat=R$ {0:N2}}" Width="95"/>
+                        <DataGridTextColumn Header="PreÃ§o Venda" Binding="{Binding PrecoVenda, StringFormat=R$ {0:N2}}" Width="95"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>
         </Border>
 
-        <!-- Formulário de Cadastro / Edição + Movimentação -->
+        <!-- FormulÃ¡rio de Cadastro / EdiÃ§Ã£o + MovimentaÃ§Ã£o -->
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <Border Background="White" CornerRadius="8" Padding="16" BorderBrush="#E2E8F0" BorderThickness="1" Margin="0,0,0,12">
+                <Border Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="16" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,12">
                     <StackPanel>
-                        <TextBlock x:Name="TxtTituloForm" Text="Novo Produto" FontSize="15.5" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,10"/>
+                        <TextBlock x:Name="TxtTituloForm" Text="Novo Produto" FontSize="15.5" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,10"/>
 
                         <TextBlock Text="Nome do Produto *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                         <TextBox x:Name="TxtNome" Margin="0,0,0,10"/>
 
-                        <TextBlock Text="Código de Barras (opcional)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                        <TextBlock Text="CÃ³digo de Barras (opcional)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                         <TextBox x:Name="TxtCodigoBarras" Margin="0,0,0,10"/>
 
                         <Grid Margin="0,0,0,10">
@@ -65,11 +65,11 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Preço Venda (R$) *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                                <TextBlock Text="PreÃ§o Venda (R$) *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                                 <TextBox x:Name="TxtPrecoVenda" Text="0,00"/>
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Preço Custo (R$)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                                <TextBlock Text="PreÃ§o Custo (R$)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                                 <TextBox x:Name="TxtPrecoCusto" Text="0,00"/>
                             </StackPanel>
                         </Grid>
@@ -81,8 +81,8 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Painel Rápido de Entrada / Saída -->
-                <Border x:Name="PanelMovimentacao" Background="White" CornerRadius="8" Padding="16" BorderBrush="#E2E8F0" BorderThickness="1" Visibility="Collapsed">
+                <!-- Painel RÃ¡pido de Entrada / SaÃ­da -->
+                <Border x:Name="PanelMovimentacao" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="16" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Visibility="Collapsed">
                     <StackPanel>
                         <TextBlock x:Name="TxtTituloMov" Text="Entrada de Estoque" FontSize="15" FontWeight="Bold" Margin="0,0,0,8"/>
                         <TextBlock x:Name="TxtProdutoMov" Text="" FontWeight="SemiBold" Foreground="#2563EB" Margin="0,0,0,10" TextWrapping="Wrap"/>
@@ -90,7 +90,7 @@
                         <TextBlock Text="Quantidade *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                         <TextBox x:Name="TxtQtdMov" Text="1" Margin="0,0,0,10"/>
 
-                        <TextBlock Text="Motivo / Observação" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                        <TextBlock Text="Motivo / ObservaÃ§Ã£o" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                         <TextBox x:Name="TxtMotivoMov" Margin="0,0,0,12"/>
 
                         <WrapPanel>

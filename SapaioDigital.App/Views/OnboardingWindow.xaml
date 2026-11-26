@@ -1,20 +1,20 @@
 <Window x:Class="SapaioDigital.App.Views.OnboardingWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Configuração Inicial Obrigatória - Sapaio Digital"
+        Title="ConfiguraÃ§Ã£o Inicial ObrigatÃ³ria - Sapaio Digital"
         Height="620" Width="620" MinHeight="480" MinWidth="480"
         WindowStartupLocation="CenterScreen"
-        Background="#F1F5F9">
-    <Border Margin="20" Background="White" CornerRadius="10" Padding="24" BorderBrush="#E2E8F0" BorderThickness="1">
+        Background="{DynamicResource BgMainBrush}">
+    <Border Margin="20" Background="{DynamicResource BgCardBrush}" CornerRadius="10" Padding="24" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <TextBlock Text="Bem-vindo ao Sapaio Digital" FontSize="22" FontWeight="Bold" Foreground="#0F172A" TextWrapping="Wrap"/>
-                <TextBlock Text="Antes de operar o sistema, informe os dados obrigatórios da sua loja (que sairão nas Ordens de Serviço e no PDV) e o usuário administrador."
-                           TextWrapping="Wrap" Foreground="#64748B" Margin="0,6,0,18" FontSize="13"/>
+                <TextBlock Text="Bem-vindo ao Sapaio Digital" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}" TextWrapping="Wrap"/>
+                <TextBlock Text="Antes de operar o sistema, informe os dados obrigatÃ³rios da sua loja (que sairÃ£o nas Ordens de ServiÃ§o e no PDV) e o usuÃ¡rio administrador."
+                           TextWrapping="Wrap" Foreground="{DynamicResource TextMutedBrush}" Margin="0,6,0,18" FontSize="13"/>
 
-                <TextBlock Text="1. Dados da Loja" FontWeight="Bold" FontSize="14" Foreground="#1E293B" Margin="0,0,0,8"/>
+                <TextBlock Text="1. Dados da Loja" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,8"/>
 
-                <TextBlock Text="Razão Social / Nome da Loja *" FontWeight="SemiBold" FontSize="12" Margin="0,4,0,4"/>
+                <TextBlock Text="RazÃ£o Social / Nome da Loja *" FontWeight="SemiBold" FontSize="12" Margin="0,4,0,4"/>
                 <TextBox x:Name="TxtRazaoSocial" Text="Sapaio Digital" Margin="0,0,0,10"/>
 
                 <TextBlock Text="Telefone / WhatsApp da Loja *" FontWeight="SemiBold" FontSize="12" Margin="0,4,0,4"/>
@@ -26,20 +26,20 @@
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Width="92" Height="74" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Background="#F8FAFC" ClipToBounds="True">
+                    <Border Grid.Column="0" Width="92" Height="74" BorderBrush="{DynamicResource BorderBrushLight}" BorderThickness="1" CornerRadius="6" Background="{DynamicResource BgSubtleBrush}" ClipToBounds="True">
                         <Image x:Name="ImgLogoPreview" MaxWidth="84" MaxHeight="66" Stretch="Uniform"
                                RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
                         <Button Content="Selecionar Foto / Logo..." Style="{StaticResource SecondaryButton}" HorizontalAlignment="Left" Click="BtnSelecionarLogo_Click"/>
-                        <TextBlock x:Name="TxtLogoArquivo" Text="Nenhuma imagem selecionada" FontSize="11.5" Foreground="#64748B" Margin="0,6,0,0" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock x:Name="TxtLogoArquivo" Text="Nenhuma imagem selecionada" FontSize="11.5" Foreground="{DynamicResource TextMutedBrush}" Margin="0,6,0,0" TextTrimming="CharacterEllipsis"/>
                     </StackPanel>
                 </Grid>
 
                 <Separator Margin="0,4,0,14"/>
 
                 <StackPanel x:Name="PanelAdmin">
-                    <TextBlock Text="2. Usuário Administrador Inicial" FontWeight="Bold" FontSize="14" Foreground="#1E293B" Margin="0,0,0,8"/>
+                    <TextBlock Text="2. UsuÃ¡rio Administrador Inicial" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,8"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -59,7 +59,7 @@
                     <PasswordBox x:Name="TxtAdminSenha" Margin="0,0,0,14"/>
                 </StackPanel>
 
-                <Button Content="Salvar e Começar a Operar" Style="{StaticResource SuccessButton}" Height="40" FontSize="14" Click="BtnSalvar_Click"/>
+                <Button Content="Salvar e ComeÃ§ar a Operar" Style="{StaticResource SuccessButton}" Height="40" FontSize="14" Click="BtnSalvar_Click"/>
             </StackPanel>
         </ScrollViewer>
     </Border>

@@ -4,18 +4,18 @@
         Title="Acesso ao Sistema - Sapaio Digital"
         Height="430" Width="410" MinHeight="380" MinWidth="360"
         WindowStartupLocation="CenterScreen"
-        Background="#F1F5F9">
-    <Border Margin="20" Background="White" CornerRadius="10" Padding="24" BorderBrush="#E2E8F0" BorderThickness="1">
+        Background="{DynamicResource BgMainBrush}">
+    <Border Margin="20" Background="{DynamicResource BgCardBrush}" CornerRadius="10" Padding="24" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel VerticalAlignment="Center">
                 <Border MaxHeight="76" MaxWidth="200" ClipToBounds="True" HorizontalAlignment="Center" Margin="0,0,0,10">
                     <Image x:Name="ImgLogo" MaxHeight="72" MaxWidth="190" Stretch="Uniform"
                            RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
-                <TextBlock x:Name="TxtNomeLoja" Text="Sapaio Digital" FontSize="19" FontWeight="Bold" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="#0F172A"/>
-                <TextBlock Text="Faça login para continuar" FontSize="12.5" Foreground="#64748B" HorizontalAlignment="Center" Margin="0,2,0,18"/>
+                <TextBlock x:Name="TxtNomeLoja" Text="Sapaio Digital" FontSize="19" FontWeight="Bold" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource TextMainBrush}"/>
+                <TextBlock Text="FaÃ§a login para continuar" FontSize="12.5" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,2,0,18"/>
 
-                <TextBlock Text="Usuário (Login)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                <TextBlock Text="UsuÃ¡rio (Login)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                 <TextBox x:Name="TxtLogin" Margin="0,0,0,12"/>
 
                 <TextBlock Text="Senha" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>

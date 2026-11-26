@@ -37,6 +37,12 @@ jobs:
           $tag = "${{ github.ref_name }}"
           Compress-Archive -Path "publish_out/*" -DestinationPath "SapaioDigital-$tag-win-x64.zip"
 
+      - name: Download VC++ Redistributable x64 for Installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "installer/redist" | Out-Null
+          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile "installer/redist/vc_redist.x64.exe"
+
       - name: Install Inno Setup and Build Windows Installer
         shell: pwsh
         run: |

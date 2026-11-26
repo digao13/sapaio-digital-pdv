@@ -5,7 +5,7 @@
         Height="760" Width="1240" MinHeight="600" MinWidth="960"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
-        Background="#F1F5F9">
+        Background="{DynamicResource BgMainBrush}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="ColSidebar" Width="235"/>
@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <Border Grid.Column="0" Background="#0F172A">
+        <Border Grid.Column="0" Background="{DynamicResource BgSidebarBrush}">
             <DockPanel>
                 <!-- Cabeçalho da Loja na Sidebar -->
                 <StackPanel x:Name="PanelSidebarHeader" DockPanel.Dock="Top" Margin="14,16,14,14">
@@ -30,7 +30,7 @@
                     <StackPanel>
                         <TextBlock Text="OPERADOR CONECTADO" FontSize="10" Foreground="#94A3B8" FontWeight="Bold"/>
                         <TextBlock x:Name="TxtUsuarioConectado" Text="Admin" Foreground="White" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                        <TextBlock x:Name="TxtVersaoApp" Text="v1.0.1" Foreground="#64748B" FontSize="11" Margin="0,4,0,6"/>
+                        <TextBlock x:Name="TxtVersaoApp" Text="v1.0.2" Foreground="#64748B" FontSize="11" Margin="0,4,0,6"/>
                         <Button Content="Trocar Usuário" Style="{StaticResource SecondaryButton}" Padding="8,5" FontSize="11.5" Click="BtnTrocarUsuario_Click"/>
                     </StackPanel>
                 </Border>
@@ -58,13 +58,18 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="16,0,24,0">
+            <Border Grid.Row="0" Background="{DynamicResource BgCardBrush}" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="0,0,0,1" Padding="16,0,24,0">
                 <DockPanel VerticalAlignment="Center">
                     <Button x:Name="BtnToggleSidebar" Content="☰" Style="{StaticResource SecondaryButton}" Padding="10,6" Margin="0,0,12,0"
                             ToolTip="Recolher/Expandir menu lateral" Click="BtnToggleSidebar_Click"/>
-                    <TextBlock x:Name="TxtTituloPagina" Text="PDV — Ponto de Venda" FontSize="17" FontWeight="Bold" Foreground="#0F172A"
+                    <TextBlock x:Name="TxtTituloPagina" Text="PDV — Ponto de Venda" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}"
                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                    <TextBlock x:Name="TxtDataHoraTopo" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#64748B" FontSize="12.5"/>
+
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button x:Name="BtnToggleTema" Content="🌙 Tema Escuro" Style="{StaticResource SecondaryButton}" Padding="10,6" FontSize="12" Margin="0,0,14,0"
+                                Click="BtnToggleTema_Click"/>
+                        <TextBlock x:Name="TxtDataHoraTopo" VerticalAlignment="Center" Foreground="{DynamicResource TextMutedBrush}" FontSize="12.5"/>
+                    </StackPanel>
                 </DockPanel>
             </Border>
 

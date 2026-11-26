@@ -7,3 +7,8 @@ obj/
 *.db-wal
 *.db-shm
 publish/
+
+installer/redist/
+installer/output/
+publish_out/
+

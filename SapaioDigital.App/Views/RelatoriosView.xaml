@@ -9,41 +9,41 @@
         </Grid.RowDefinitions>
 
         <!-- Filtros -->
-        <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="12" Margin="0,0,0,12" BorderBrush="#E2E8F0" BorderThickness="1">
+        <Border Grid.Row="0" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="12" Margin="0,0,0,12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
             <WrapPanel VerticalAlignment="Center">
                 <TextBlock Text="Data Inicial:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,4,6,4"/>
                 <DatePicker x:Name="DpInicio" Margin="0,2,14,2"/>
                 <TextBlock Text="Data Final:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,4,6,4"/>
                 <DatePicker x:Name="DpFim" Margin="0,2,14,2"/>
-                <Button Content="Filtrar Relatórios" Style="{StaticResource PrimaryButton}" Click="BtnFiltrar_Click"/>
+                <Button Content="Filtrar RelatÃ³rios" Style="{StaticResource PrimaryButton}" Click="BtnFiltrar_Click"/>
             </WrapPanel>
         </Border>
 
         <!-- Cards de Resumo -->
         <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,12">
-            <Border Background="White" CornerRadius="8" Padding="14" Margin="0,0,6,0" BorderBrush="#E2E8F0" BorderThickness="1">
+            <Border Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="14" Margin="0,0,6,0" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="TOTAL EM VENDAS (PDV)" FontSize="11" FontWeight="Bold" Foreground="#64748B" TextWrapping="Wrap"/>
+                    <TextBlock Text="TOTAL EM VENDAS (PDV)" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
                     <TextBlock x:Name="TxtResumoVendas" Text="R$ 0,00" FontSize="19" FontWeight="Bold" Foreground="#16A34A" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" CornerRadius="8" Padding="14" Margin="4,0" BorderBrush="#E2E8F0" BorderThickness="1">
+            <Border Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="14" Margin="4,0" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="BAIXAS / SAÍDAS DE ESTOQUE" FontSize="11" FontWeight="Bold" Foreground="#64748B" TextWrapping="Wrap"/>
+                    <TextBlock Text="BAIXAS / SAÃDAS DE ESTOQUE" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
                     <TextBlock x:Name="TxtResumoBaixas" Text="0 itens" FontSize="19" FontWeight="Bold" Foreground="#DC2626" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" CornerRadius="8" Padding="14" Margin="6,0,0,0" BorderBrush="#E2E8F0" BorderThickness="1">
+            <Border Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="14" Margin="6,0,0,0" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="ORÇAMENTOS / OS NO PERÍODO" FontSize="11" FontWeight="Bold" Foreground="#64748B" TextWrapping="Wrap"/>
+                    <TextBlock Text="ORÃ‡AMENTOS / OS NO PERÃODO" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
                     <TextBlock x:Name="TxtResumoOs" Text="0 OS" FontSize="19" FontWeight="Bold" Foreground="#2563EB" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
         </UniformGrid>
 
         <!-- Abas -->
-        <TabControl Grid.Row="2" Background="White" BorderBrush="#E2E8F0">
-            <TabItem Header="📦 Baixas e Movimentações de Estoque">
+        <TabControl Grid.Row="2" Background="{DynamicResource BgCardBrush}" BorderBrush="{DynamicResource CardBorderBrush}">
+            <TabItem Header="ðŸ“¦ Baixas e MovimentaÃ§Ãµes de Estoque">
                 <DataGrid x:Name="GridMovimentacoes" Margin="8" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="125"/>
@@ -52,15 +52,15 @@
                         <DataGridTextColumn Header="Qtd" Binding="{Binding Quantidade}" Width="60"/>
                         <DataGridTextColumn Header="Saldo Ant." Binding="{Binding SaldoAnterior}" Width="75"/>
                         <DataGridTextColumn Header="Saldo Novo" Binding="{Binding SaldoNovo}" Width="80"/>
-                        <DataGridTextColumn Header="Usuário" Binding="{Binding UsuarioNome}" Width="110"/>
+                        <DataGridTextColumn Header="UsuÃ¡rio" Binding="{Binding UsuarioNome}" Width="110"/>
                         <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" Width="160"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
 
-            <TabItem Header="🛒 Vendas Realizadas (PDV)">
+            <TabItem Header="ðŸ›’ Vendas Realizadas (PDV)">
                 <DockPanel Margin="8">
-                    <Button DockPanel.Dock="Top" Content="🖨️ Reimprimir Cupom da Venda Selecionada" Style="{StaticResource SecondaryButton}"
+                    <Button DockPanel.Dock="Top" Content="ðŸ–¨ï¸ Reimprimir Cupom da Venda Selecionada" Style="{StaticResource SecondaryButton}"
                             HorizontalAlignment="Right" Margin="0,0,0,8" Click="BtnReimprimirCupom_Click"/>
                     <DataGrid x:Name="GridVendas" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
@@ -75,9 +75,9 @@
                 </DockPanel>
             </TabItem>
 
-            <TabItem Header="🔧 Orçamentos / Ordens de Serviço Feitos">
+            <TabItem Header="ðŸ”§ OrÃ§amentos / Ordens de ServiÃ§o Feitos">
                 <DockPanel Margin="8">
-                    <Button DockPanel.Dock="Top" Content="📄 Gerar / Reimprimir PDF da OS Selecionada" Style="{StaticResource SecondaryButton}"
+                    <Button DockPanel.Dock="Top" Content="ðŸ“„ Gerar / Reimprimir PDF da OS Selecionada" Style="{StaticResource SecondaryButton}"
                             HorizontalAlignment="Right" Margin="0,0,0,8" Click="BtnReimprimirOs_Click"/>
                     <DataGrid x:Name="GridOrcamentos" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <DataGrid.Columns>

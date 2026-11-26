@@ -7,7 +7,7 @@
             <ColumnDefinition Width="0.36*" MinWidth="300" MaxWidth="420"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1">
+        <Border Grid.Column="0" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="16" Margin="0,0,14,0" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
             <DockPanel>
                 <TextBox x:Name="TxtBusca" DockPanel.Dock="Top" MaxWidth="300" HorizontalAlignment="Left" MinWidth="200" Margin="0,0,0,12"
                          ToolTip="Buscar cliente por nome ou telefone" TextChanged="TxtBusca_TextChanged"/>
@@ -17,16 +17,16 @@
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="48"/>
                         <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="*" MinWidth="130"/>
                         <DataGridTextColumn Header="Telefone / WhatsApp" Binding="{Binding TelefoneWhatsApp}" Width="140"/>
-                        <DataGridTextColumn Header="Endereço" Binding="{Binding Endereco}" Width="190"/>
+                        <DataGridTextColumn Header="EndereÃ§o" Binding="{Binding Endereco}" Width="190"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>
         </Border>
 
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
-            <Border Background="White" CornerRadius="8" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" VerticalAlignment="Top">
+            <Border Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="18" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" VerticalAlignment="Top">
                 <StackPanel>
-                    <TextBlock x:Name="TxtTituloForm" Text="Novo Cliente" FontSize="15.5" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,12"/>
+                    <TextBlock x:Name="TxtTituloForm" Text="Novo Cliente" FontSize="15.5" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,12"/>
 
                     <TextBlock Text="Nome Completo *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <TextBox x:Name="TxtNome" Margin="0,0,0,10"/>
@@ -34,10 +34,10 @@
                     <TextBlock Text="Telefone / WhatsApp *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <TextBox x:Name="TxtTelefone" Margin="0,0,0,10"/>
 
-                    <TextBlock Text="Endereço *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBlock Text="EndereÃ§o *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <TextBox x:Name="TxtEndereco" Margin="0,0,0,10"/>
 
-                    <TextBlock Text="Observações" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBlock Text="ObservaÃ§Ãµes" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <TextBox x:Name="TxtObs" Height="65" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,14"/>
 
                     <WrapPanel>
