@@ -1,4 +1,4 @@
-<Application x:Class="SapaioDigital.App.App"
+﻿<Application x:Class="SapaioDigital.App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Application.Resources>
@@ -199,7 +199,7 @@
                         <ControlTemplate TargetType="TextBox">
                             <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10" SnapsToDevicePixels="True">
-                                <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" TextElement.Foreground="{TemplateBinding Foreground}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsKeyboardFocused" Value="True">
@@ -230,7 +230,7 @@
                         <ControlTemplate TargetType="PasswordBox">
                             <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10" SnapsToDevicePixels="True">
-                                <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" TextElement.Foreground="{TemplateBinding Foreground}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsKeyboardFocused" Value="True">

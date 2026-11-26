@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 
 namespace SapaioDigital.App.Helpers;
@@ -9,14 +9,20 @@ namespace SapaioDigital.App.Helpers;
 /// </summary>
 public static class AppPaths
 {
-    public static string DataRoot { get; } = Path.Combine(
+    public static string DataRoot { get; private set; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "SapaioDigital");
 
-    public static string DatabasePath { get; } = Path.Combine(DataRoot, "sapaio_digital.db");
-    public static string BackupsDir { get; } = Path.Combine(DataRoot, "Backups");
-    public static string LogosDir { get; } = Path.Combine(DataRoot, "Logos");
-    public static string OsPdfDir { get; } = Path.Combine(DataRoot, "OrdensServico");
+    public static string DatabasePath => Path.Combine(DataRoot, "sapaio_digital.db");
+    public static string BackupsDir => Path.Combine(DataRoot, "Backups");
+    public static string LogosDir => Path.Combine(DataRoot, "Logos");
+    public static string OsPdfDir => Path.Combine(DataRoot, "OrdensServico");
+
+    public static void OverrideDataRootForTests(string customPath)
+    {
+        DataRoot = customPath;
+        EnsureDirectories();
+    }
 
     public static void EnsureDirectories()
     {

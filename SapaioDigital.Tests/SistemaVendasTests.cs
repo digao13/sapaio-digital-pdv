@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using SapaioDigital.App.Data;
@@ -14,6 +14,7 @@ public class SistemaVendasTests
     [Fact]
     public void FluxoCompleto_BancoEstoquePdvOsPdf_DeveFuncionarSemErros()
     {
+        AppPaths.OverrideDataRootForTests(Path.Combine(Path.GetTempPath(), "SapaioTests_" + Guid.NewGuid().ToString("N")[..6]));
         DatabaseService.Initialize();
 
         var loja = new LojaConfig
