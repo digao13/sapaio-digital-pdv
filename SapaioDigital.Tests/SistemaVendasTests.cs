@@ -96,12 +96,17 @@ public class SistemaVendasTests
             Equipamento = "Notebook Dell Inspiron",
             ProblemaRelatado = "Não liga, fonte em curto",
             ServicosObservacoes = "Troca do jack DC",
-            ValorEstimado = 180.00m,
+            ValorServico = 180.00m,
+            ValorEstimado = 430.00m,
+            Itens = { new OrcamentoItem { ProdutoId = prod.Id, ProdutoNome = prod.Nome, Quantidade = 1, PrecoUnitario = 250.00m } },
             DataHora = DateTime.Now,
             UsuarioNome = "Tester",
             Status = "Aberto"
         };
         DatabaseService.SalvarOrcamento(os);
+
+        var prodAposOs = DatabaseService.ObterProdutoPorCodigoBarras(prod.CodigoBarras!);
+        Assert.Equal(10, prodAposOs!.Quantidade);
 
         string pdfOs = PdfOsService.GerarOrdemServicoPdf(os, lojaSalva, abrirAposGerar: false);
         Assert.True(File.Exists(pdfOs));

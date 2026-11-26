@@ -1,5 +1,5 @@
-﻿using System;
-using System.Globalization;
+using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -15,13 +15,19 @@ namespace SapaioDigital.App.Views;
 public partial class OrcamentosView : UserControl
 {
     private Orcamento? _osEditando;
+    private readonly ObservableCollection<OrcamentoItem> _itensOs = new();
 
     public OrcamentosView()
     {
         InitializeComponent();
+        InputValidator.AplicarSomenteDecimal(TxtValorServico);
         InputValidator.AplicarSomenteDecimal(TxtValor);
+        InputValidator.AplicarSomenteInteiro(TxtQtdPeca);
+        GridItensOs.ItemsSource = _itensOs;
+
         CarregarLoja();
         CarregarClientes();
+        CarregarProdutos();
         CarregarOrcamentos();
         Limpar();
     }
@@ -43,17 +49,70 @@ public partial class OrcamentosView : UserControl
         }
     }
 
-    private void CarregarClientes()
-    {
-        CmbCliente.ItemsSource = DatabaseService.ListarClientes();
-    }
-
-    private void CarregarOrcamentos()
-    {
-        GridOrcamentos.ItemsSource = DatabaseService.ListarOrcamentos(null, null, TxtBusca.Text);
-    }
+    private void CarregarClientes() => CmbCliente.ItemsSource = DatabaseService.ListarClientes();
+    private void CarregarProdutos() => CmbProdutoEstoque.ItemsSource = DatabaseService.ListarProdutos();
+    private void CarregarOrcamentos() => GridOrcamentos.ItemsSource = DatabaseService.ListarOrcamentos(null, null, TxtBusca.Text);
 
     private void TxtBusca_TextChanged(object sender, TextChangedEventArgs e) => CarregarOrcamentos();
+
+    private void BtnAddPeca_Click(object sender, RoutedEventArgs e)
+    {
+        if (CmbProdutoEstoque.SelectedItem is not Produto p)
+        {
+            MessageBox.Show("Selecione um produto do estoque.", "Peças", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        if (!int.TryParse(TxtQtdPeca.Text, out int qtd) || qtd <= 0)
+        {
+            MessageBox.Show("Informe uma quantidade válida maior que zero.", "Peças", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        int jaNaLista = _itensOs.Where(x => x.ProdutoId == p.Id && !x.Baixado).Sum(x => x.Quantidade);
+        if (jaNaLista + qtd > p.Quantidade)
+        {
+            MessageBox.Show($"Estoque insuficiente para '{p.Nome}'. Disponível: {p.Quantidade}.", "Estoque", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        _itensOs.Add(new OrcamentoItem
+        {
+            ProdutoId = p.Id,
+            ProdutoNome = p.Nome,
+            Quantidade = qtd,
+            PrecoUnitario = p.PrecoVenda,
+            Baixado = false
+        });
+        TxtQtdPeca.Text = "1";
+        AtualizarTotaisOs();
+    }
+
+    private void BtnRemoverPeca_Click(object sender, RoutedEventArgs e)
+    {
+        if (GridItensOs.SelectedItem is not OrcamentoItem item) return;
+        if (item.Baixado)
+        {
+            MessageBox.Show("Esta peça já foi baixada do estoque ao salvar a OS. Para devolver ao estoque, registre uma Entrada na tela de Produtos.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        _itensOs.Remove(item);
+        AtualizarTotaisOs();
+    }
+
+    private void TxtValorServico_TextChanged(object sender, TextChangedEventArgs e) => AtualizarTotaisOs();
+
+    private void AtualizarTotaisOs()
+    {
+        if (TxtValorPecas == null) return;
+        decimal pecas = _itensOs.Sum(x => x.Subtotal);
+        InputValidator.TryParseDecimalPtBr(TxtValorServico.Text, out decimal servico);
+        TxtValorPecas.Text = pecas.ToString("N2");
+        TxtValor.Text = (servico + pecas).ToString("N2");
+
+        var vis = _itensOs.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        GridItensOs.Visibility = vis;
+        BtnRemoverPeca.Visibility = vis;
+    }
 
     private void GridOrcamentos_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -64,9 +123,17 @@ public partial class OrcamentosView : UserControl
         TxtEquipamento.Text = os.Equipamento;
         TxtProblema.Text = os.ProblemaRelatado;
         TxtServicos.Text = os.ServicosObservacoes;
-        TxtValor.Text = os.ValorEstimado.ToString("N2");
         DpData.SelectedDate = os.DataHora.Date;
         TxtResponsavel.Text = os.UsuarioNome;
+
+        _itensOs.Clear();
+        foreach (var it in os.Itens) _itensOs.Add(it);
+
+        decimal pecas = _itensOs.Sum(x => x.Subtotal);
+        decimal servico = os.ValorServico > 0 ? os.ValorServico : Math.Max(0, os.ValorEstimado - pecas);
+        TxtValorServico.Text = servico.ToString("N2");
+        AtualizarTotaisOs();
+        TxtValor.Text = os.ValorEstimado.ToString("N2");
 
         foreach (ComboBoxItem item in CmbStatus.Items)
         {
@@ -89,7 +156,9 @@ public partial class OrcamentosView : UserControl
         TxtEquipamento.Clear();
         TxtProblema.Clear();
         TxtServicos.Clear();
-        TxtValor.Text = "0,00";
+        _itensOs.Clear();
+        TxtValorServico.Text = "0,00";
+        AtualizarTotaisOs();
         DpData.SelectedDate = DateTime.Today;
         CmbStatus.SelectedIndex = 0;
         TxtResponsavel.Text = SessaoAtual.UsuarioLogado?.Nome ?? "Operador";
@@ -108,7 +177,9 @@ public partial class OrcamentosView : UserControl
             return null;
         }
 
-        decimal.TryParse(TxtValor.Text, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal valor);
+        InputValidator.TryParseDecimalPtBr(TxtValorServico.Text, out decimal valorServico);
+        InputValidator.TryParseDecimalPtBr(TxtValor.Text, out decimal valorTotal);
+
         DateTime dataBase = DpData.SelectedDate ?? DateTime.Today;
         DateTime dataHora = _osEditando != null
             ? dataBase.Date.Add(_osEditando.DataHora.TimeOfDay)
@@ -123,9 +194,11 @@ public partial class OrcamentosView : UserControl
         os.Equipamento = TxtEquipamento.Text.Trim();
         os.ProblemaRelatado = TxtProblema.Text.Trim();
         os.ServicosObservacoes = TxtServicos.Text.Trim();
-        os.ValorEstimado = valor;
+        os.ValorServico = valorServico;
+        os.ValorEstimado = valorTotal;
         os.DataHora = dataHora;
         os.Status = (CmbStatus.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Aberto";
+        os.Itens = _itensOs.ToList();
 
         if (os.Id == 0)
         {
@@ -134,6 +207,7 @@ public partial class OrcamentosView : UserControl
         }
 
         DatabaseService.SalvarOrcamento(os);
+        CarregarProdutos();
         CarregarOrcamentos();
         return os;
     }

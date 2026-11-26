@@ -72,7 +72,9 @@ public class Orcamento
     public string Equipamento { get; set; } = string.Empty;
     public string ProblemaRelatado { get; set; } = string.Empty;
     public string ServicosObservacoes { get; set; } = string.Empty;
+    public decimal ValorServico { get; set; }
     public decimal ValorEstimado { get; set; }
+    public List<OrcamentoItem> Itens { get; set; } = new();
     public DateTime DataHora { get; set; } = DateTime.Now;
     public int? UsuarioId { get; set; }
     public string UsuarioNome { get; set; } = string.Empty;
@@ -105,5 +107,16 @@ public class VendaItem
     public string? CodigoBarras { get; set; }
     public int Quantidade { get; set; }
     public decimal PrecoUnitario { get; set; }
+    public decimal Subtotal => Quantidade * PrecoUnitario;
+}
+public class OrcamentoItem
+{
+    public int Id { get; set; }
+    public int OrcamentoId { get; set; }
+    public int ProdutoId { get; set; }
+    public string ProdutoNome { get; set; } = string.Empty;
+    public int Quantidade { get; set; }
+    public decimal PrecoUnitario { get; set; }
+    public bool Baixado { get; set; }
     public decimal Subtotal => Quantidade * PrecoUnitario;
 }

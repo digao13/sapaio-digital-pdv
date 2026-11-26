@@ -10,7 +10,7 @@ namespace SapaioDigital.App.Data;
 
 public static class DatabaseService
 {
-    private const int CurrentSchemaVersion = 2;
+    private const int CurrentSchemaVersion = 3;
 
     private static string ConnectionString => new SqliteConnectionStringBuilder
     {
@@ -59,6 +59,24 @@ public static class DatabaseService
                 migCmd.CommandText = "ALTER TABLE LojaConfig ADD COLUMN Cnpj TEXT NOT NULL DEFAULT '';";
                 migCmd.ExecuteNonQuery();
                 SetSchemaVersion(conn, 2);
+            }
+            if (version < 3)
+            {
+                using var m3 = conn.CreateCommand();
+                m3.CommandText = @"ALTER TABLE Orcamentos ADD COLUMN ValorServico REAL NOT NULL DEFAULT 0;
+                    CREATE TABLE IF NOT EXISTS OrcamentoItens (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        OrcamentoId INTEGER NOT NULL,
+                        ProdutoId INTEGER NOT NULL,
+                        ProdutoNome TEXT NOT NULL,
+                        Quantidade INTEGER NOT NULL CHECK (Quantidade > 0),
+                        PrecoUnitario REAL NOT NULL,
+                        Baixado INTEGER NOT NULL DEFAULT 1,
+                        FOREIGN KEY (OrcamentoId) REFERENCES Orcamentos(Id) ON DELETE CASCADE,
+                        FOREIGN KEY (ProdutoId) REFERENCES Produtos(Id) ON DELETE RESTRICT
+                    );";
+                m3.ExecuteNonQuery();
+                SetSchemaVersion(conn, 3);
             }
         }
     }
@@ -169,6 +187,7 @@ public static class DatabaseService
                 Equipamento TEXT NOT NULL DEFAULT '',
                 ProblemaRelatado TEXT NOT NULL,
                 ServicosObservacoes TEXT NOT NULL DEFAULT '',
+                ValorServico REAL NOT NULL DEFAULT 0,
                 ValorEstimado REAL NOT NULL DEFAULT 0,
                 DataHora TEXT NOT NULL,
                 UsuarioId INTEGER,
@@ -176,6 +195,18 @@ public static class DatabaseService
                 Status TEXT NOT NULL DEFAULT 'Aberto',
                 FOREIGN KEY (ClienteId) REFERENCES Clientes(Id) ON DELETE RESTRICT,
                 FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE SET NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS OrcamentoItens (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                OrcamentoId INTEGER NOT NULL,
+                ProdutoId INTEGER NOT NULL,
+                ProdutoNome TEXT NOT NULL,
+                Quantidade INTEGER NOT NULL CHECK (Quantidade > 0),
+                PrecoUnitario REAL NOT NULL,
+                Baixado INTEGER NOT NULL DEFAULT 1,
+                FOREIGN KEY (OrcamentoId) REFERENCES Orcamentos(Id) ON DELETE CASCADE,
+                FOREIGN KEY (ProdutoId) REFERENCES Produtos(Id) ON DELETE RESTRICT
             );
 
             CREATE TABLE IF NOT EXISTS Vendas (
@@ -607,45 +638,105 @@ public static class DatabaseService
     public static int SalvarOrcamento(Orcamento os)
     {
         using var conn = OpenConnection();
-        using var cmd = conn.CreateCommand();
-        if (os.Id == 0)
+        using var tx = conn.BeginTransaction();
+
+        using (var cmd = conn.CreateCommand())
         {
-            cmd.CommandText = @"
-                INSERT INTO Orcamentos
-                    (ClienteId, ClienteNome, ClienteTelefone, ClienteEndereco, Equipamento, ProblemaRelatado, ServicosObservacoes, ValorEstimado, DataHora, UsuarioId, UsuarioNome, Status)
-                VALUES
-                    (@cid, @cnome, @ctel, @cend, @equip, @prob, @serv, @val, @dt, @uid, @unome, @status);
-                SELECT last_insert_rowid();";
+            cmd.Transaction = tx;
+            if (os.Id == 0)
+            {
+                cmd.CommandText = @"
+                    INSERT INTO Orcamentos
+                        (ClienteId, ClienteNome, ClienteTelefone, ClienteEndereco, Equipamento, ProblemaRelatado, ServicosObservacoes, ValorServico, ValorEstimado, DataHora, UsuarioId, UsuarioNome, Status)
+                    VALUES
+                        (@cid, @cnome, @ctel, @cend, @equip, @prob, @serv, @vs, @val, @dt, @uid, @unome, @status);
+                    SELECT last_insert_rowid();";
+            }
+            else
+            {
+                cmd.CommandText = @"
+                    UPDATE Orcamentos
+                    SET ClienteId = @cid, ClienteNome = @cnome, ClienteTelefone = @ctel, ClienteEndereco = @cend,
+                        Equipamento = @equip, ProblemaRelatado = @prob, ServicosObservacoes = @serv, ValorServico = @vs, ValorEstimado = @val,
+                        DataHora = @dt, Status = @status
+                    WHERE Id = @id;";
+                cmd.Parameters.AddWithValue("@id", os.Id);
+            }
+
+            cmd.Parameters.AddWithValue("@cid", os.ClienteId);
+            cmd.Parameters.AddWithValue("@cnome", os.ClienteNome);
+            cmd.Parameters.AddWithValue("@ctel", os.ClienteTelefone);
+            cmd.Parameters.AddWithValue("@cend", os.ClienteEndereco);
+            cmd.Parameters.AddWithValue("@equip", os.Equipamento?.Trim() ?? "");
+            cmd.Parameters.AddWithValue("@prob", os.ProblemaRelatado.Trim());
+            cmd.Parameters.AddWithValue("@serv", os.ServicosObservacoes?.Trim() ?? "");
+            cmd.Parameters.AddWithValue("@vs", (double)os.ValorServico);
+            cmd.Parameters.AddWithValue("@val", (double)os.ValorEstimado);
+            cmd.Parameters.AddWithValue("@dt", os.DataHora.ToString("o"));
+            cmd.Parameters.AddWithValue("@uid", (object?)os.UsuarioId ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@unome", os.UsuarioNome);
+            cmd.Parameters.AddWithValue("@status", os.Status);
+
+            if (os.Id == 0)
+                os.Id = Convert.ToInt32(cmd.ExecuteScalar());
+            else
+                cmd.ExecuteNonQuery();
         }
-        else
+
+        foreach (var item in os.Itens)
         {
-            cmd.CommandText = @"
-                UPDATE Orcamentos
-                SET ClienteId = @cid, ClienteNome = @cnome, ClienteTelefone = @ctel, ClienteEndereco = @cend,
-                    Equipamento = @equip, ProblemaRelatado = @prob, ServicosObservacoes = @serv, ValorEstimado = @val,
-                    DataHora = @dt, Status = @status
-                WHERE Id = @id;";
-            cmd.Parameters.AddWithValue("@id", os.Id);
+            if (item.Baixado) continue;
+
+            int saldoAtual;
+            string nomeProd;
+            using (var checkCmd = conn.CreateCommand())
+            {
+                checkCmd.Transaction = tx;
+                checkCmd.CommandText = "SELECT Nome, Quantidade FROM Produtos WHERE Id = @pid;";
+                checkCmd.Parameters.AddWithValue("@pid", item.ProdutoId);
+                using var r = checkCmd.ExecuteReader();
+                if (!r.Read())
+                    throw new InvalidOperationException($"Produto '{item.ProdutoNome}' não encontrado.");
+                nomeProd = r.GetString(0);
+                saldoAtual = r.GetInt32(1);
+            }
+
+            if (saldoAtual < item.Quantidade)
+                throw new InvalidOperationException($"Estoque insuficiente para '{nomeProd}'. Disponível: {saldoAtual}, Solicitado: {item.Quantidade}.");
+
+            int novoSaldo = saldoAtual - item.Quantidade;
+            using (var updCmd = conn.CreateCommand())
+            {
+                updCmd.Transaction = tx;
+                updCmd.CommandText = "UPDATE Produtos SET Quantidade = @novo WHERE Id = @pid;";
+                updCmd.Parameters.AddWithValue("@novo", novoSaldo);
+                updCmd.Parameters.AddWithValue("@pid", item.ProdutoId);
+                updCmd.ExecuteNonQuery();
+            }
+
+            InserirMovimentacao(
+                conn, tx, item.ProdutoId, nomeProd, "SAIDA", item.Quantidade,
+                saldoAtual, novoSaldo, $"Peça usada na OS #{os.Id:D5}", os.UsuarioId, os.UsuarioNome);
+
+            using (var insItem = conn.CreateCommand())
+            {
+                insItem.Transaction = tx;
+                insItem.CommandText = @"
+                    INSERT INTO OrcamentoItens (OrcamentoId, ProdutoId, ProdutoNome, Quantidade, PrecoUnitario, Baixado)
+                    VALUES (@oid, @pid, @pnome, @qtd, @pu, 1);
+                    SELECT last_insert_rowid();";
+                insItem.Parameters.AddWithValue("@oid", os.Id);
+                insItem.Parameters.AddWithValue("@pid", item.ProdutoId);
+                insItem.Parameters.AddWithValue("@pnome", nomeProd);
+                insItem.Parameters.AddWithValue("@qtd", item.Quantidade);
+                insItem.Parameters.AddWithValue("@pu", (double)item.PrecoUnitario);
+                item.Id = Convert.ToInt32(insItem.ExecuteScalar());
+                item.OrcamentoId = os.Id;
+                item.Baixado = true;
+            }
         }
 
-        cmd.Parameters.AddWithValue("@cid", os.ClienteId);
-        cmd.Parameters.AddWithValue("@cnome", os.ClienteNome);
-        cmd.Parameters.AddWithValue("@ctel", os.ClienteTelefone);
-        cmd.Parameters.AddWithValue("@cend", os.ClienteEndereco);
-        cmd.Parameters.AddWithValue("@equip", os.Equipamento?.Trim() ?? "");
-        cmd.Parameters.AddWithValue("@prob", os.ProblemaRelatado.Trim());
-        cmd.Parameters.AddWithValue("@serv", os.ServicosObservacoes?.Trim() ?? "");
-        cmd.Parameters.AddWithValue("@val", (double)os.ValorEstimado);
-        cmd.Parameters.AddWithValue("@dt", os.DataHora.ToString("o"));
-        cmd.Parameters.AddWithValue("@uid", (object?)os.UsuarioId ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@unome", os.UsuarioNome);
-        cmd.Parameters.AddWithValue("@status", os.Status);
-
-        if (os.Id == 0)
-            os.Id = Convert.ToInt32(cmd.ExecuteScalar());
-        else
-            cmd.ExecuteNonQuery();
-
+        tx.Commit();
         return os.Id;
     }
 
@@ -657,7 +748,7 @@ public static class DatabaseService
 
         var sql = @"
             SELECT Id, ClienteId, ClienteNome, ClienteTelefone, ClienteEndereco, Equipamento,
-                   ProblemaRelatado, ServicosObservacoes, ValorEstimado, DataHora, UsuarioId, UsuarioNome, Status
+                   ProblemaRelatado, ServicosObservacoes, ValorServico, ValorEstimado, DataHora, UsuarioId, UsuarioNome, Status
             FROM Orcamentos
             WHERE 1=1";
 
@@ -680,26 +771,51 @@ public static class DatabaseService
         sql += " ORDER BY Id DESC;";
         cmd.CommandText = sql;
 
-        using var reader = cmd.ExecuteReader();
-        while (reader.Read())
+        using (var reader = cmd.ExecuteReader())
         {
-            lista.Add(new Orcamento
+            while (reader.Read())
             {
-                Id = reader.GetInt32(0),
-                ClienteId = reader.GetInt32(1),
-                ClienteNome = reader.GetString(2),
-                ClienteTelefone = reader.GetString(3),
-                ClienteEndereco = reader.GetString(4),
-                Equipamento = reader.GetString(5),
-                ProblemaRelatado = reader.GetString(6),
-                ServicosObservacoes = reader.GetString(7),
-                ValorEstimado = Convert.ToDecimal(reader.GetDouble(8)),
-                DataHora = DateTime.Parse(reader.GetString(9), CultureInfo.InvariantCulture),
-                UsuarioId = reader.IsDBNull(10) ? null : reader.GetInt32(10),
-                UsuarioNome = reader.GetString(11),
-                Status = reader.GetString(12)
-            });
+                lista.Add(new Orcamento
+                {
+                    Id = reader.GetInt32(0),
+                    ClienteId = reader.GetInt32(1),
+                    ClienteNome = reader.GetString(2),
+                    ClienteTelefone = reader.GetString(3),
+                    ClienteEndereco = reader.GetString(4),
+                    Equipamento = reader.GetString(5),
+                    ProblemaRelatado = reader.GetString(6),
+                    ServicosObservacoes = reader.GetString(7),
+                    ValorServico = Convert.ToDecimal(reader.GetDouble(8)),
+                    ValorEstimado = Convert.ToDecimal(reader.GetDouble(9)),
+                    DataHora = DateTime.Parse(reader.GetString(10), CultureInfo.InvariantCulture),
+                    UsuarioId = reader.IsDBNull(11) ? null : reader.GetInt32(11),
+                    UsuarioNome = reader.GetString(12),
+                    Status = reader.GetString(13)
+                });
+            }
         }
+
+        foreach (var os in lista)
+        {
+            using var iCmd = conn.CreateCommand();
+            iCmd.CommandText = "SELECT Id, OrcamentoId, ProdutoId, ProdutoNome, Quantidade, PrecoUnitario, Baixado FROM OrcamentoItens WHERE OrcamentoId = @oid;";
+            iCmd.Parameters.AddWithValue("@oid", os.Id);
+            using var r = iCmd.ExecuteReader();
+            while (r.Read())
+            {
+                os.Itens.Add(new OrcamentoItem
+                {
+                    Id = r.GetInt32(0),
+                    OrcamentoId = r.GetInt32(1),
+                    ProdutoId = r.GetInt32(2),
+                    ProdutoNome = r.GetString(3),
+                    Quantidade = r.GetInt32(4),
+                    PrecoUnitario = Convert.ToDecimal(r.GetDouble(5)),
+                    Baixado = r.GetInt32(6) == 1
+                });
+            }
+        }
+
         return lista;
     }
 

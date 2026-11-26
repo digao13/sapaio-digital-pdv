@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -20,6 +21,10 @@ public static class PdfOsService
     {
         AppPaths.EnsureDirectories();
         string filePath = Path.Combine(AppPaths.OsPdfDir, $"OS_{os.Id:D5}_{os.DataHora:yyyyMMdd_HHmm}.pdf");
+
+        decimal totalPecas = os.Itens.Sum(i => i.Subtotal);
+        decimal valorServico = os.ValorServico > 0 ? os.ValorServico : Math.Max(0, os.ValorEstimado - totalPecas);
+        decimal totalGeral = os.ValorEstimado > 0 ? os.ValorEstimado : (valorServico + totalPecas);
 
         Document.Create(container =>
         {
@@ -62,9 +67,8 @@ public static class PdfOsService
 
                 page.Content().PaddingVertical(16).Column(col =>
                 {
-                    col.Spacing(14);
+                    col.Spacing(12);
 
-                    // Dados do Cliente
                     col.Item().Border(1).BorderColor("#E2E8F0").Padding(10).Column(c =>
                     {
                         c.Item().Text("DADOS DO CLIENTE").Bold().FontSize(10).FontColor("#1E293B");
@@ -73,7 +77,6 @@ public static class PdfOsService
                         c.Item().Text($"Endereço: {os.ClienteEndereco}");
                     });
 
-                    // Equipamento & Responsável
                     col.Item().Border(1).BorderColor("#E2E8F0").Padding(10).Column(c =>
                     {
                         c.Item().Text("INFORMAÇÕES DO ATENDIMENTO").Bold().FontSize(10).FontColor("#1E293B");
@@ -82,29 +85,79 @@ public static class PdfOsService
                         c.Item().Text($"Data e Hora do Registro: {os.DataHora:dd/MM/yyyy 'às' HH:mm:ss}");
                     });
 
-                    // Problema Relatado
                     col.Item().Border(1).BorderColor("#E2E8F0").Padding(10).Column(c =>
                     {
                         c.Item().Text("PROBLEMA RELATADO / DEFEITO").Bold().FontSize(10).FontColor("#1E293B");
                         c.Item().PaddingTop(4).Text(os.ProblemaRelatado);
                     });
 
-                    // Serviços / Observações Técnicas
                     col.Item().Border(1).BorderColor("#E2E8F0").Padding(10).Column(c =>
                     {
                         c.Item().Text("SERVIÇOS PREVISTOS / OBSERVAÇÕES TÉCNICAS").Bold().FontSize(10).FontColor("#1E293B");
                         c.Item().PaddingTop(4).Text(string.IsNullOrWhiteSpace(os.ServicosObservacoes) ? "Sem observações adicionais." : os.ServicosObservacoes);
                     });
 
-                    // Valor Estimado
-                    col.Item().AlignRight().Background("#EFF6FF").Border(1).BorderColor("#BFDBFE").Padding(10).Row(r =>
+                    // Peças / Produtos do Estoque (se houver)
+                    if (os.Itens.Count > 0)
                     {
-                        r.AutoItem().Text("VALOR ESTIMADO / TOTAL:  ").Bold().FontSize(12).FontColor("#1E3A8A");
-                        r.AutoItem().Text($"R$ {os.ValorEstimado:N2}").Bold().FontSize(13).FontColor("#1D4ED8");
+                        col.Item().Column(pCol =>
+                        {
+                            pCol.Item().PaddingBottom(4).Text("PEÇAS / PRODUTOS UTILIZADOS").Bold().FontSize(10).FontColor("#1E293B");
+                            pCol.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.ConstantColumn(50);
+                                    columns.ConstantColumn(85);
+                                    columns.ConstantColumn(90);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Background("#1E293B").Padding(6).Text("Produto / Peça").FontColor(Colors.White).Bold();
+                                    header.Cell().Background("#1E293B").Padding(6).AlignRight().Text("Qtd").FontColor(Colors.White).Bold();
+                                    header.Cell().Background("#1E293B").Padding(6).AlignRight().Text("Vl. Unit.").FontColor(Colors.White).Bold();
+                                    header.Cell().Background("#1E293B").Padding(6).AlignRight().Text("Subtotal").FontColor(Colors.White).Bold();
+                                });
+
+                                int idx = 0;
+                                foreach (var item in os.Itens)
+                                {
+                                    string bg = idx % 2 == 1 ? "#F8FAFC" : "#FFFFFF";
+                                    table.Cell().Background(bg).BorderBottom(1).BorderColor("#E2E8F0").Padding(6).Text(item.ProdutoNome);
+                                    table.Cell().Background(bg).BorderBottom(1).BorderColor("#E2E8F0").Padding(6).AlignRight().Text(item.Quantidade.ToString());
+                                    table.Cell().Background(bg).BorderBottom(1).BorderColor("#E2E8F0").Padding(6).AlignRight().Text($"R$ {item.PrecoUnitario:N2}");
+                                    table.Cell().Background(bg).BorderBottom(1).BorderColor("#E2E8F0").Padding(6).AlignRight().Text($"R$ {item.Subtotal:N2}");
+                                    idx++;
+                                }
+                            });
+                        });
+                    }
+
+                    // Resumo Discriminado: Serviço + Produtos = Total
+                    col.Item().AlignRight().Width(270).Background("#EFF6FF").Border(1).BorderColor("#BFDBFE").Padding(10).Column(tot =>
+                    {
+                        tot.Item().Row(r =>
+                        {
+                            r.RelativeItem().Text("Valor do Serviço (Mão de Obra):").FontSize(9.5f);
+                            r.AutoItem().Text($"R$ {valorServico:N2}").FontSize(9.5f).Bold();
+                        });
+                        tot.Item().Row(r =>
+                        {
+                            r.RelativeItem().Text("Total em Peças / Produtos:").FontSize(9.5f);
+                            r.AutoItem().Text($"R$ {totalPecas:N2}").FontSize(9.5f).Bold();
+                        });
+                        tot.Item().PaddingVertical(4).LineHorizontal(1).LineColor("#BFDBFE");
+                        tot.Item().Row(r =>
+                        {
+                            r.RelativeItem().Text("VALOR TOTAL DA OS:").Bold().FontSize(11).FontColor("#1E3A8A");
+                            r.AutoItem().Text($"R$ {totalGeral:N2}").Bold().FontSize(12).FontColor("#1D4ED8");
+                        });
                     });
 
                     // Assinaturas
-                    col.Item().PaddingTop(36).Row(r =>
+                    col.Item().PaddingTop(28).Row(r =>
                     {
                         r.RelativeItem().PaddingRight(20).Column(s =>
                         {
@@ -137,4 +190,3 @@ public static class PdfOsService
         return filePath;
     }
 }
-
