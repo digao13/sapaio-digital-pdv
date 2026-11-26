@@ -86,8 +86,8 @@ public static class CloudOAuthService
                 "https://www.googleapis.com/auth/drive.file"
             ),
             "OneDrive" => (
-                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-                "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+                "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize",
+                "https://login.microsoftonline.com/consumers/oauth2/v2.0/token",
                 "Files.ReadWrite offline_access"
             ),
             "Dropbox" => (
@@ -248,7 +248,7 @@ public static class CloudOAuthService
         string tokenUrl = conta.Provedor switch
         {
             "GoogleDrive" => "https://oauth2.googleapis.com/token",
-            "OneDrive" => "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+            "OneDrive" => "https://login.microsoftonline.com/consumers/oauth2/v2.0/token",
             "Dropbox" => "https://api.dropboxapi.com/oauth2/token",
             _ => throw new InvalidOperationException("Provedor inválido.")
         };
