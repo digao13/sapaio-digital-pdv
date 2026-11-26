@@ -112,12 +112,40 @@ public partial class ConfiguracoesView : UserControl
         MessageBox.Show("Dados da loja atualizados com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
+    private void BtnObterClientId_Click(object sender, RoutedEventArgs e)
+    {
+        string provedor = (CmbProvedorOAuth.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Dropbox";
+        Clipboard.SetText("http://127.0.0.1:54821/callback");
+
+        string portalUrl = provedor switch
+        {
+            "Dropbox" => "https://www.dropbox.com/developers/apps/create",
+            "OneDrive" => "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade",
+            "GoogleDrive" => "https://console.cloud.google.com/apis/credentials",
+            _ => "https://www.dropbox.com/developers/apps/create"
+        };
+
+        Process.Start(new ProcessStartInfo(portalUrl) { UseShellExecute = true });
+
+        MessageBox.Show(
+            $"O portal oficial do {provedor} foi aberto no seu navegador!\n\n" +
+            $"O Redirect URI já foi copiado para a sua área de transferência (Ctrl+V):\n" +
+            $"http://127.0.0.1:54821/callback\n\n" +
+            $"Após criar o app e colar o Redirect URI, copie o Client ID gerado e cole aqui.",
+            "Como obter o Client ID", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
     private async void BtnConectarOAuth_Click(object sender, RoutedEventArgs e)
     {
         string provedor = (CmbProvedorOAuth.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Dropbox";
         if (string.IsNullOrWhiteSpace(TxtOAuthClientId.Text))
         {
-            MessageBox.Show("Informe o Client ID do aplicativo para abrir a página de autorização.\nRedirect URI: http://127.0.0.1:54821/callback", "Client ID obrigatório", MessageBoxButton.OK, MessageBoxImage.Warning);
+            var resp = MessageBox.Show(
+                $"Para abrir a tela de login do {provedor} no navegador, é necessário informar o Client ID do aplicativo.\n\n" +
+                $"Deseja abrir agora a página oficial para gerar seu Client ID em 1 minuto?",
+                "Client ID necessário", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (resp == MessageBoxResult.Yes)
+                BtnObterClientId_Click(sender, e);
             return;
         }
 
@@ -183,7 +211,7 @@ public partial class ConfiguracoesView : UserControl
     {
         var dlg = new OpenFolderDialog { Title = "Selecione a pasta de destino para os backups" };
         if (dlg.ShowDialog() == true)
-            DefinirDestinoBackup(dlg.FolderName, "Pasta Personalizada");
+            DefinirDestinoBackup(dlg.FolderName, "Pasta Local");
     }
 
     private void ChkBackupDiario_Changed(object sender, RoutedEventArgs e)

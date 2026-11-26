@@ -44,38 +44,41 @@
             </ScrollViewer>
         </TabItem>
 
-        <!-- ABA 2: BACKUP LOCAL & NUVEM -->
-        <TabItem Header="Backup Local &amp; Nuvem">
+        <!-- ABA 2: BACKUP NUVEM & LOCAL -->
+        <TabItem Header="Backup Nuvem &amp; Local">
             <Grid Margin="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.48*" MinWidth="380"/>
                     <ColumnDefinition Width="0.52*" MinWidth="360"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Configuração: OAuth no Navegador + Pasta Local/Sincronizada -->
                 <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,14,0">
                     <StackPanel>
-                        <!-- CARD OAUTH NO NAVEGADOR -->
+                        <!-- CARD 1: BACKUP EM NUVEM VIA NAVEGADOR (OAUTH 2.0) -->
                         <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="18" Padding="20" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,14">
                             <StackPanel>
-                                <TextBlock Text="1. Conectar Conta na Nuvem (Navegador)" FontSize="15.5" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                <TextBlock Text="Abre a página oficial de login para você autorizar o envio direto dos backups sem precisar instalar app de sincronização."
+                                <TextBlock Text="1. Backup Direto na Nuvem (Login no Navegador)" FontSize="15.5" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <TextBlock Text="Conecta sua conta direto pela internet via OAuth 2.0 (envio automático mesmo sem aplicativo da nuvem instalado)."
                                            TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,10"/>
 
                                 <TextBlock x:Name="TxtStatusContaOAuth" Text="Nenhuma conta conectada via navegador" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryLinkBrush}" Margin="0,0,0,10" TextWrapping="Wrap"/>
 
-                                <TextBlock Text="Provedor" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                <TextBlock Text="Provedor da Nuvem" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                 <ComboBox x:Name="CmbProvedorOAuth" Margin="0,0,0,8">
-                                    <ComboBoxItem Content="Dropbox" Tag="Dropbox" IsSelected="True"/>
-                                    <ComboBoxItem Content="OneDrive" Tag="OneDrive"/>
+                                    <ComboBoxItem Content="Dropbox (Recomendado — sem Secret)" Tag="Dropbox" IsSelected="True"/>
+                                    <ComboBoxItem Content="OneDrive (Microsoft)" Tag="OneDrive"/>
                                     <ComboBoxItem Content="Google Drive" Tag="GoogleDrive"/>
                                 </ComboBox>
 
-                                <TextBlock Text="Client ID do Aplicativo *" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                <TextBox x:Name="TxtOAuthClientId" Margin="0,0,0,8" ToolTip="Redirect URI: http://127.0.0.1:54821/callback"/>
+                                <DockPanel Margin="0,0,0,4">
+                                    <TextBlock Text="Client ID do Aplicativo *" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <Button DockPanel.Dock="Right" Content="Obter Client ID" Style="{StaticResource SecondaryButton}" Padding="10,4" FontSize="11.5" HorizontalAlignment="Right"
+                                            ToolTip="Abre o portal oficial do provedor e copia o Redirect URI" Click="BtnObterClientId_Click"/>
+                                </DockPanel>
+                                <TextBox x:Name="TxtOAuthClientId" Margin="0,0,0,8"/>
 
-                                <TextBlock Text="Client Secret (se exigido pelo Google)" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                <TextBox x:Name="TxtOAuthClientSecret" Margin="0,0,0,10"/>
+                                <TextBlock Text="Client Secret (apenas se exigido pelo Google)" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                <TextBox x:Name="TxtOAuthClientSecret" Margin="0,0,0,8"/>
 
                                 <TextBlock Text="Redirect URI: http://127.0.0.1:54821/callback" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,10"/>
 
@@ -86,24 +89,24 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- CARD PASTA LOCAL / SINCRONIZADA -->
+                        <!-- CARD 2: BACKUP LOCAL (OPCIONAL) -->
                         <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="18" Padding="20" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,14">
                             <StackPanel>
-                                <TextBlock Text="2. Pasta Local ou Sincronizada (Opcional)" FontSize="15.5" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                <TextBlock Text="Pasta de Destino Local:" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                                <TextBlock Text="2. Backup Local (Opcional / Pasta Sincronizada)" FontSize="15.5" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <TextBlock Text="Pasta Local / Rede / Pendrive:" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
                                 <TextBox x:Name="TxtPastaBackup" IsReadOnly="True" Margin="0,0,0,10"/>
 
                                 <WrapPanel Margin="0,0,0,8">
+                                    <Button Content="Escolher Pasta Local..." Style="{StaticResource SecondaryButton}" Padding="12,6" Margin="0,0,6,6" Click="BtnEscolherPasta_Click"/>
                                     <Button Content="OneDrive PC" Style="{StaticResource SecondaryButton}" Padding="12,6" Margin="0,0,6,6" Click="BtnOneDrive_Click"/>
                                     <Button Content="Google Drive PC" Style="{StaticResource SecondaryButton}" Padding="12,6" Margin="0,0,6,6" Click="BtnGoogleDrive_Click"/>
-                                    <Button Content="Dropbox PC" Style="{StaticResource SecondaryButton}" Padding="12,6" Margin="0,0,6,6" Click="BtnDropbox_Click"/>
-                                    <Button Content="Escolher Pasta..." Style="{StaticResource SecondaryButton}" Padding="12,6" Margin="0,0,0,6" Click="BtnEscolherPasta_Click"/>
+                                    <Button Content="Dropbox PC" Style="{StaticResource SecondaryButton}" Padding="12,6" Margin="0,0,0,6" Click="BtnDropbox_Click"/>
                                 </WrapPanel>
                                 <TextBlock x:Name="TxtStatusPastasPC" Text="" FontSize="11.5" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- CARD ROTINA -->
+                        <!-- CARD 3: ROTINA DIÁRIA -->
                         <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="18" Padding="20" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="3. Rotina Automática Diária" FontSize="15.5" FontWeight="SemiBold" Margin="0,0,0,10"/>
@@ -150,7 +153,7 @@
                 <Border MaxWidth="640" HorizontalAlignment="Left" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="24" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                     <StackPanel>
                         <TextBlock Text="Atualização Automática via GitHub" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                        <TextBlock x:Name="TxtVersao" Text="Versão instalada: 1.2.0" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryLinkBrush}" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtVersao" Text="Versão instalada: 1.2.1" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryLinkBrush}" Margin="0,0,0,4"/>
                         <TextBlock Text="Repositório: digao13/sapaio-digital-pdv" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,12"/>
                         <TextBlock x:Name="TxtStatusUpdate" Text="Verifique se há novas versões no GitHub para atualizar o sistema preservando seu banco de dados." TextWrapping="Wrap" Margin="0,0,0,16"/>
 
