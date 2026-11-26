@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SapaioDigital.App.Models;
@@ -9,6 +9,7 @@ public class LojaConfig
     public string RazaoSocial { get; set; } = string.Empty;
     public string Telefone { get; set; } = string.Empty;
     public string Cnpj { get; set; } = string.Empty;
+    public string Endereco { get; set; } = string.Empty;
     public string LogoPath { get; set; } = string.Empty;
     public bool Configurada { get; set; }
 }

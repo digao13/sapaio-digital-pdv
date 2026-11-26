@@ -29,6 +29,56 @@
                             </StackPanel>
                         </Grid>
 
+                        <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="12" Padding="12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="Endereço da Loja (CEP automático)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,6"/>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="TxtLojaCep" Grid.Column="0" MaxLength="9" ToolTip="Digite os 8 dígitos do CEP" TextChanged="TxtLojaCep_TextChanged"/>
+                                    <Button x:Name="BtnBuscarCepLoja" Grid.Column="2" Content="Buscar CEP" Style="{StaticResource SecondaryButton}" Padding="10,6" Click="BtnBuscarCepLoja_Click"/>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="92"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Rua / Logradouro" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtLojaRua" TextChanged="CampoEnderecoLoja_TextChanged"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Número" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtLojaNumero" TextChanged="CampoEnderecoLoja_TextChanged"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="68"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Cidade" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtLojaCidade" TextChanged="CampoEnderecoLoja_TextChanged"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="UF" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                        <TextBox x:Name="TxtLojaUf" MaxLength="2" TextAlignment="Center" TextChanged="CampoEnderecoLoja_TextChanged"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <TextBlock Text="Endereço Completo" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                <TextBox x:Name="TxtLojaEndereco" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
                         <TextBlock Text="Foto / Logo da Loja *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,6"/>
                         <WrapPanel Margin="0,0,0,18">
                             <Border Width="104" Height="80" BorderBrush="{DynamicResource BorderBrushLight}" BorderThickness="1" CornerRadius="12" Background="{DynamicResource BgSubtleBrush}" ClipToBounds="True" Margin="0,0,14,6">

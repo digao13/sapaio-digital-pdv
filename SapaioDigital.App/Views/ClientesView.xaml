@@ -1,15 +1,15 @@
-﻿<UserControl x:Class="SapaioDigital.App.Views.ClientesView"
+<UserControl x:Class="SapaioDigital.App.Views.ClientesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.64*" MinWidth="400"/>
-            <ColumnDefinition Width="0.36*" MinWidth="300" MaxWidth="420"/>
+            <ColumnDefinition Width="0.60*" MinWidth="380"/>
+            <ColumnDefinition Width="0.40*" MinWidth="330" MaxWidth="460"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.Column="0" Background="{DynamicResource BgCardBrush}" CornerRadius="18" Padding="16" Margin="0,0,14,0" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
             <DockPanel>
-                <TextBox x:Name="TxtBusca" DockPanel.Dock="Top" MaxWidth="300" HorizontalAlignment="Left" MinWidth="200" Margin="0,0,0,12"
+                <TextBox x:Name="TxtBusca" DockPanel.Dock="Top" MaxWidth="320" HorizontalAlignment="Left" MinWidth="220" Margin="0,0,0,12"
                          ToolTip="Buscar cliente por nome ou telefone" TextChanged="TxtBusca_TextChanged"/>
 
                 <DataGrid x:Name="GridClientes" SelectionChanged="GridClientes_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Auto">
@@ -17,7 +17,7 @@
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="48"/>
                         <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="*" MinWidth="130"/>
                         <DataGridTextColumn Header="Telefone / WhatsApp" Binding="{Binding TelefoneWhatsApp}" Width="140"/>
-                        <DataGridTextColumn Header="Endereço" Binding="{Binding Endereco}" Width="190"/>
+                        <DataGridTextColumn Header="Endereço" Binding="{Binding Endereco}" Width="210"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>
@@ -34,11 +34,58 @@
                     <TextBlock Text="Telefone / WhatsApp *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <TextBox x:Name="TxtTelefone" Margin="0,0,0,10"/>
 
-                    <TextBlock Text="Endereço *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtEndereco" Margin="0,0,0,10"/>
+                    <Border Background="{DynamicResource BgSubtleBrush}" CornerRadius="12" Padding="12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="CEP (busca automática)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="TxtCep" Grid.Column="0" MaxLength="9" ToolTip="Digite os 8 dígitos do CEP" TextChanged="TxtCep_TextChanged"/>
+                                <Button x:Name="BtnBuscarCep" Grid.Column="2" Content="Buscar CEP" Style="{StaticResource SecondaryButton}" Padding="10,6" Click="BtnBuscarCep_Click"/>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="88"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Rua / Logradouro" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                    <TextBox x:Name="TxtRua" TextChanged="CampoEndereco_TextChanged"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Número" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                    <TextBox x:Name="TxtNumero" TextChanged="CampoEndereco_TextChanged"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="68"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Cidade" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                    <TextBox x:Name="TxtCidade" TextChanged="CampoEndereco_TextChanged"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="UF" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                                    <TextBox x:Name="TxtUf" MaxLength="2" TextAlignment="Center" TextChanged="CampoEndereco_TextChanged"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="Endereço Completo *" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,3"/>
+                            <TextBox x:Name="TxtEndereco" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
 
                     <TextBlock Text="Observações" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtObs" Height="65" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,14"/>
+                    <TextBox x:Name="TxtObs" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,14"/>
 
                     <WrapPanel>
                         <Button Content="Salvar Cliente" Style="{StaticResource PrimaryButton}" Click="BtnSalvar_Click" Margin="0,0,8,6"/>

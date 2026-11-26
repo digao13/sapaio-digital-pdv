@@ -18,6 +18,8 @@ public partial class ConfiguracoesView : UserControl
     private string _logoPath = "";
     private string _downloadUrl = "";
     private bool _carregandoBackup;
+    private bool _atualizandoEnderecoLoja;
+    private string _bairroLoja = "";
 
     public ConfiguracoesView()
     {
@@ -30,6 +32,7 @@ public partial class ConfiguracoesView : UserControl
             TxtRazaoSocial.Text = loja.RazaoSocial;
             TxtTelefone.Text = loja.Telefone;
             TxtCnpj.Text = loja.Cnpj;
+            TxtLojaEndereco.Text = loja.Endereco;
             _logoPath = loja.LogoPath;
             CarregarPreview(_logoPath);
         }
@@ -121,6 +124,7 @@ public partial class ConfiguracoesView : UserControl
             RazaoSocial = TxtRazaoSocial.Text.Trim(),
             Telefone = TxtTelefone.Text.Trim(),
             Cnpj = TxtCnpj.Text.Trim(),
+            Endereco = TxtLojaEndereco.Text.Trim(),
             LogoPath = _logoPath,
             Configurada = true
         });
@@ -363,5 +367,58 @@ public partial class ConfiguracoesView : UserControl
             ImprimirAutomaticamente = ChkAutoImprimirCupom.IsChecked == true
         });
         MessageBox.Show("Parâmetros de impressora salvos com sucesso!", "Impressora", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private async void TxtLojaCep_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_atualizandoEnderecoLoja) return;
+        if (CepService.LimparCep(TxtLojaCep.Text).Length == 8)
+            await BuscarCepLojaAsync(mostrarErro: false);
+    }
+
+    private async void BtnBuscarCepLoja_Click(object sender, RoutedEventArgs e) =>
+        await BuscarCepLojaAsync(mostrarErro: true);
+
+    private async System.Threading.Tasks.Task BuscarCepLojaAsync(bool mostrarErro)
+    {
+        BtnBuscarCepLoja.IsEnabled = false;
+        try
+        {
+            var res = await CepService.BuscarAsync(TxtLojaCep.Text);
+            if (!res.Sucesso)
+            {
+                if (mostrarErro)
+                    MessageBox.Show(res.Erro, "CEP", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            _atualizandoEnderecoLoja = true;
+            _bairroLoja = res.Bairro;
+            TxtLojaRua.Text = res.Rua;
+            TxtLojaCidade.Text = res.Cidade;
+            TxtLojaUf.Text = res.Uf;
+            _atualizandoEnderecoLoja = false;
+
+            AtualizarEnderecoLojaMontado();
+            TxtLojaNumero.Focus();
+        }
+        finally
+        {
+            BtnBuscarCepLoja.IsEnabled = true;
+        }
+    }
+
+    private void CampoEnderecoLoja_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_atualizandoEnderecoLoja) return;
+        AtualizarEnderecoLojaMontado();
+    }
+
+    private void AtualizarEnderecoLojaMontado()
+    {
+        string montado = CepService.FormatarEndereco(
+            TxtLojaRua.Text, TxtLojaNumero.Text, _bairroLoja, TxtLojaCidade.Text, TxtLojaUf.Text, TxtLojaCep.Text);
+        if (!string.IsNullOrWhiteSpace(montado))
+            TxtLojaEndereco.Text = montado;
     }
 }

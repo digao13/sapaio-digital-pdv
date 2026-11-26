@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -10,7 +10,7 @@ namespace SapaioDigital.App.Data;
 
 public static class DatabaseService
 {
-    private const int CurrentSchemaVersion = 3;
+    private const int CurrentSchemaVersion = 4;
 
     private static string ConnectionString => new SqliteConnectionStringBuilder
     {
@@ -78,6 +78,14 @@ public static class DatabaseService
                 m3.ExecuteNonQuery();
                 SetSchemaVersion(conn, 3);
             }
+            if (version < 4)
+            {
+                using var m4 = conn.CreateCommand();
+                m4.CommandText = @"ALTER TABLE LojaConfig ADD COLUMN Endereco TEXT NOT NULL DEFAULT '';
+                    UPDATE LojaConfig SET Endereco = '' WHERE Endereco IS NULL;";
+                m4.ExecuteNonQuery();
+                SetSchemaVersion(conn, 4);
+            }
         }
     }
 
@@ -127,6 +135,7 @@ public static class DatabaseService
                 RazaoSocial TEXT NOT NULL,
                 Telefone TEXT NOT NULL,
                 Cnpj TEXT NOT NULL DEFAULT '',
+                Endereco TEXT NOT NULL DEFAULT '',
                 LogoPath TEXT NOT NULL,
                 Configurada INTEGER NOT NULL DEFAULT 0
             );
@@ -247,7 +256,7 @@ public static class DatabaseService
     {
         using var conn = OpenConnection();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT Id, RazaoSocial, Telefone, Cnpj, LogoPath, Configurada FROM LojaConfig WHERE Id = 1;";
+        cmd.CommandText = "SELECT Id, RazaoSocial, Telefone, Cnpj, Endereco, LogoPath, Configurada FROM LojaConfig WHERE Id = 1;";
         using var reader = cmd.ExecuteReader();
         if (!reader.Read()) return null;
 
@@ -257,8 +266,9 @@ public static class DatabaseService
             RazaoSocial = reader.GetString(1),
             Telefone = reader.GetString(2),
             Cnpj = reader.GetString(3),
-            LogoPath = reader.GetString(4),
-            Configurada = reader.GetInt32(5) == 1
+            Endereco = reader.GetString(4),
+            LogoPath = reader.GetString(5),
+            Configurada = reader.GetInt32(6) == 1
         };
     }
 
@@ -281,18 +291,20 @@ public static class DatabaseService
         using var conn = OpenConnection();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO LojaConfig (Id, RazaoSocial, Telefone, Cnpj, LogoPath, Configurada)
-            VALUES (1, @razao, @tel, @cnpj, @logo, @conf)
+            INSERT INTO LojaConfig (Id, RazaoSocial, Telefone, Cnpj, Endereco, LogoPath, Configurada)
+            VALUES (1, @razao, @tel, @cnpj, @end, @logo, @conf)
             ON CONFLICT(Id) DO UPDATE SET
                 RazaoSocial = excluded.RazaoSocial,
                 Telefone = excluded.Telefone,
                 Cnpj = excluded.Cnpj,
+                Endereco = excluded.Endereco,
                 LogoPath = excluded.LogoPath,
                 Configurada = excluded.Configurada;
         ";
         cmd.Parameters.AddWithValue("@razao", config.RazaoSocial.Trim());
         cmd.Parameters.AddWithValue("@tel", config.Telefone.Trim());
         cmd.Parameters.AddWithValue("@cnpj", (config.Cnpj ?? "").Trim());
+        cmd.Parameters.AddWithValue("@end", (config.Endereco ?? "").Trim());
         cmd.Parameters.AddWithValue("@logo", finalLogoPath);
         cmd.Parameters.AddWithValue("@conf", config.Configurada ? 1 : 0);
         cmd.ExecuteNonQuery();
