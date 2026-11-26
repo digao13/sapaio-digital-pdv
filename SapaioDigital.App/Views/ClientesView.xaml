@@ -3,47 +3,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="360"/>
+            <ColumnDefinition Width="0.64*" MinWidth="400"/>
+            <ColumnDefinition Width="0.36*" MinWidth="300" MaxWidth="420"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,16,0" BorderBrush="#E2E8F0" BorderThickness="1">
+        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1">
             <DockPanel>
-                <TextBox x:Name="TxtBusca" DockPanel.Dock="Top" Width="300" HorizontalAlignment="Left" Margin="0,0,0,12"
+                <TextBox x:Name="TxtBusca" DockPanel.Dock="Top" MaxWidth="300" HorizontalAlignment="Left" MinWidth="200" Margin="0,0,0,12"
                          ToolTip="Buscar cliente por nome ou telefone" TextChanged="TxtBusca_TextChanged"/>
 
-                <DataGrid x:Name="GridClientes" SelectionChanged="GridClientes_SelectionChanged">
+                <DataGrid x:Name="GridClientes" SelectionChanged="GridClientes_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
-                        <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="*"/>
-                        <DataGridTextColumn Header="Telefone / WhatsApp" Binding="{Binding TelefoneWhatsApp}" Width="150"/>
-                        <DataGridTextColumn Header="Endereço" Binding="{Binding Endereco}" Width="220"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="48"/>
+                        <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="*" MinWidth="130"/>
+                        <DataGridTextColumn Header="Telefone / WhatsApp" Binding="{Binding TelefoneWhatsApp}" Width="140"/>
+                        <DataGridTextColumn Header="Endereço" Binding="{Binding Endereco}" Width="190"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>
         </Border>
 
-        <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" VerticalAlignment="Top">
-            <StackPanel>
-                <TextBlock x:Name="TxtTituloForm" Text="Novo Cliente" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,12"/>
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <Border Background="White" CornerRadius="8" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock x:Name="TxtTituloForm" Text="Novo Cliente" FontSize="15.5" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Nome Completo *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                <TextBox x:Name="TxtNome" Margin="0,0,0,10"/>
+                    <TextBlock Text="Nome Completo *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtNome" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Telefone / WhatsApp *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                <TextBox x:Name="TxtTelefone" Margin="0,0,0,10"/>
+                    <TextBlock Text="Telefone / WhatsApp *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtTelefone" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Endereço *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                <TextBox x:Name="TxtEndereco" Margin="0,0,0,10"/>
+                    <TextBlock Text="Endereço *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtEndereco" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Observações" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                <TextBox x:Name="TxtObs" Height="65" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,14"/>
+                    <TextBlock Text="Observações" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtObs" Height="65" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,14"/>
 
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Salvar Cliente" Style="{StaticResource PrimaryButton}" Click="BtnSalvar_Click" Margin="0,0,8,0"/>
-                    <Button Content="Limpar / Novo" Style="{StaticResource SecondaryButton}" Click="BtnLimpar_Click"/>
+                    <WrapPanel>
+                        <Button Content="Salvar Cliente" Style="{StaticResource PrimaryButton}" Click="BtnSalvar_Click" Margin="0,0,8,6"/>
+                        <Button Content="Limpar / Novo" Style="{StaticResource SecondaryButton}" Click="BtnLimpar_Click" Margin="0,0,0,6"/>
+                    </WrapPanel>
                 </StackPanel>
-            </StackPanel>
-        </Border>
+            </Border>
+        </ScrollViewer>
     </Grid>
 </UserControl>

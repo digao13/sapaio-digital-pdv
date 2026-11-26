@@ -12,6 +12,7 @@ namespace SapaioDigital.App;
 public partial class MainWindow : Window
 {
     private readonly DispatcherTimer _timer;
+    private bool _sidebarRecolhida;
 
     public MainWindow()
     {
@@ -27,6 +28,51 @@ public partial class MainWindow : Window
         TxtDataHoraTopo.Text = DateTime.Now.ToString("dd/MM/yyyy  HH:mm:ss");
 
         NavegarParaPdv();
+    }
+
+    private void BtnToggleSidebar_Click(object sender, RoutedEventArgs e)
+    {
+        _sidebarRecolhida = !_sidebarRecolhida;
+        if (_sidebarRecolhida)
+        {
+            ColSidebar.Width = new GridLength(68);
+            PanelSidebarHeader.Visibility = Visibility.Collapsed;
+            PanelSidebarFooter.Visibility = Visibility.Collapsed;
+            BtnNavPdv.Content = "🛒";
+            BtnNavOrc.Content = "🔧";
+            BtnNavProd.Content = "📦";
+            BtnNavCli.Content = "👥";
+            BtnNavRel.Content = "📊";
+            BtnNavUsu.Content = "👤";
+            BtnNavCfg.Content = "🏪";
+            BtnNavPdv.HorizontalContentAlignment = HorizontalAlignment.Center;
+            BtnNavOrc.HorizontalContentAlignment = HorizontalAlignment.Center;
+            BtnNavProd.HorizontalContentAlignment = HorizontalAlignment.Center;
+            BtnNavCli.HorizontalContentAlignment = HorizontalAlignment.Center;
+            BtnNavRel.HorizontalContentAlignment = HorizontalAlignment.Center;
+            BtnNavUsu.HorizontalContentAlignment = HorizontalAlignment.Center;
+            BtnNavCfg.HorizontalContentAlignment = HorizontalAlignment.Center;
+        }
+        else
+        {
+            ColSidebar.Width = new GridLength(235);
+            PanelSidebarHeader.Visibility = Visibility.Visible;
+            PanelSidebarFooter.Visibility = Visibility.Visible;
+            BtnNavPdv.Content = "🛒  PDV (Vendas)";
+            BtnNavOrc.Content = "🔧  Orçamentos / OS";
+            BtnNavProd.Content = "📦  Produtos e Estoque";
+            BtnNavCli.Content = "👥  Clientes";
+            BtnNavRel.Content = "📊  Relatórios";
+            BtnNavUsu.Content = "👤  Usuários";
+            BtnNavCfg.Content = "🏪  Loja & Atualização";
+            BtnNavPdv.HorizontalContentAlignment = HorizontalAlignment.Left;
+            BtnNavOrc.HorizontalContentAlignment = HorizontalAlignment.Left;
+            BtnNavProd.HorizontalContentAlignment = HorizontalAlignment.Left;
+            BtnNavCli.HorizontalContentAlignment = HorizontalAlignment.Left;
+            BtnNavRel.HorizontalContentAlignment = HorizontalAlignment.Left;
+            BtnNavUsu.HorizontalContentAlignment = HorizontalAlignment.Left;
+            BtnNavCfg.HorizontalContentAlignment = HorizontalAlignment.Left;
+        }
     }
 
     private void AtualizarCabecalhoLoja()

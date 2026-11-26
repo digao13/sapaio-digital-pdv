@@ -1,4 +1,4 @@
-name: Build and Release Sapaio Digital
+name: Build, Installer and Release Sapaio Digital
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore and Test
-        run: dotnet test SapaioDigital.sln --configuration Release
+        run: dotnet test SapaioDigital.slnx --configuration Release
 
       - name: Publish Self-Contained Win-x64
         run: >
@@ -31,14 +31,26 @@ jobs:
           -p:PublishSingleFile=false
           -o publish_out
 
-      - name: Package ZIP
+      - name: Package Portable ZIP
         shell: pwsh
         run: |
           $tag = "${{ github.ref_name }}"
           Compress-Archive -Path "publish_out/*" -DestinationPath "SapaioDigital-$tag-win-x64.zip"
 
+      - name: Install Inno Setup and Build Windows Installer
+        shell: pwsh
+        run: |
+          $ver = "${{ github.ref_name }}".TrimStart('v', 'V')
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup -y --no-progress
+          }
+          & $iscc "/DAppVersion=$ver" "installer\SapaioDigital.iss"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: SapaioDigital-${{ github.ref_name }}-win-x64.zip
+          files: |
+            SapaioDigital-${{ github.ref_name }}-win-x64.zip
+            installer/output/SapaioDigital-Setup-${{ github.ref_name }}.exe
           generate_release_notes: true

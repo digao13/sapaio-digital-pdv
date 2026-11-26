@@ -3,48 +3,50 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="360"/>
+            <ColumnDefinition Width="0.64*" MinWidth="380"/>
+            <ColumnDefinition Width="0.36*" MinWidth="300" MaxWidth="420"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,16,0" BorderBrush="#E2E8F0" BorderThickness="1">
-            <DataGrid x:Name="GridUsuarios" SelectionChanged="GridUsuarios_SelectionChanged">
+        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1">
+            <DataGrid x:Name="GridUsuarios" SelectionChanged="GridUsuarios_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
-                    <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="*"/>
-                    <DataGridTextColumn Header="Login" Binding="{Binding Login}" Width="140"/>
-                    <DataGridTextColumn Header="Perfil" Binding="{Binding Perfil}" Width="120"/>
-                    <DataGridCheckBoxColumn Header="Ativo" Binding="{Binding Ativo}" Width="65"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="48"/>
+                    <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="*" MinWidth="130"/>
+                    <DataGridTextColumn Header="Login" Binding="{Binding Login}" Width="125"/>
+                    <DataGridTextColumn Header="Perfil" Binding="{Binding Perfil}" Width="110"/>
+                    <DataGridCheckBoxColumn Header="Ativo" Binding="{Binding Ativo}" Width="60"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
 
-        <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" VerticalAlignment="Top">
-            <StackPanel>
-                <TextBlock x:Name="TxtTituloForm" Text="Novo Usuário" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,12"/>
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <Border Background="White" CornerRadius="8" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock x:Name="TxtTituloForm" Text="Novo Usuário" FontSize="15.5" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Nome Completo *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                <TextBox x:Name="TxtNome" Margin="0,0,0,10"/>
+                    <TextBlock Text="Nome Completo *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtNome" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Login *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                <TextBox x:Name="TxtLogin" Margin="0,0,0,10"/>
+                    <TextBlock Text="Login *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtLogin" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Senha (deixe vazio ao editar para manter)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                <PasswordBox x:Name="TxtSenha" Margin="0,0,0,10"/>
+                    <TextBlock Text="Senha (deixe vazio ao editar para manter)" FontWeight="SemiBold" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                    <PasswordBox x:Name="TxtSenha" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Perfil" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                <ComboBox x:Name="CmbPerfil" Margin="0,0,0,10">
-                    <ComboBoxItem Content="Operador" IsSelected="True"/>
-                    <ComboBoxItem Content="Administrador"/>
-                </ComboBox>
+                    <TextBlock Text="Perfil" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="CmbPerfil" Margin="0,0,0,10">
+                        <ComboBoxItem Content="Operador" IsSelected="True"/>
+                        <ComboBoxItem Content="Administrador"/>
+                    </ComboBox>
 
-                <CheckBox x:Name="ChkAtivo" Content="Usuário Ativo" IsChecked="True" Margin="0,4,0,16"/>
+                    <CheckBox x:Name="ChkAtivo" Content="Usuário Ativo" IsChecked="True" Margin="0,4,0,16"/>
 
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Salvar Usuário" Style="{StaticResource PrimaryButton}" Click="BtnSalvar_Click" Margin="0,0,8,0"/>
-                    <Button Content="Limpar / Novo" Style="{StaticResource SecondaryButton}" Click="BtnLimpar_Click"/>
+                    <WrapPanel>
+                        <Button Content="Salvar Usuário" Style="{StaticResource PrimaryButton}" Click="BtnSalvar_Click" Margin="0,0,8,6"/>
+                        <Button Content="Limpar / Novo" Style="{StaticResource SecondaryButton}" Click="BtnLimpar_Click" Margin="0,0,0,6"/>
+                    </WrapPanel>
                 </StackPanel>
-            </StackPanel>
-        </Border>
+            </Border>
+        </ScrollViewer>
     </Grid>
 </UserControl>

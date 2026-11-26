@@ -9,34 +9,34 @@
         </Grid.RowDefinitions>
 
         <!-- Filtros -->
-        <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="14" Margin="0,0,0,12" BorderBrush="#E2E8F0" BorderThickness="1">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="Data Inicial:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,6,0"/>
-                <DatePicker x:Name="DpInicio" Margin="0,0,16,0"/>
-                <TextBlock Text="Data Final:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,6,0"/>
-                <DatePicker x:Name="DpFim" Margin="0,0,16,0"/>
+        <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="12" Margin="0,0,0,12" BorderBrush="#E2E8F0" BorderThickness="1">
+            <WrapPanel VerticalAlignment="Center">
+                <TextBlock Text="Data Inicial:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,4,6,4"/>
+                <DatePicker x:Name="DpInicio" Margin="0,2,14,2"/>
+                <TextBlock Text="Data Final:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,4,6,4"/>
+                <DatePicker x:Name="DpFim" Margin="0,2,14,2"/>
                 <Button Content="Filtrar Relatórios" Style="{StaticResource PrimaryButton}" Click="BtnFiltrar_Click"/>
-            </StackPanel>
+            </WrapPanel>
         </Border>
 
         <!-- Cards de Resumo -->
         <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,12">
-            <Border Background="White" CornerRadius="8" Padding="14" Margin="0,0,8,0" BorderBrush="#E2E8F0" BorderThickness="1">
+            <Border Background="White" CornerRadius="8" Padding="14" Margin="0,0,6,0" BorderBrush="#E2E8F0" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="TOTAL EM VENDAS (PDV)" FontSize="11" FontWeight="Bold" Foreground="#64748B"/>
-                    <TextBlock x:Name="TxtResumoVendas" Text="R$ 0,00" FontSize="20" FontWeight="Bold" Foreground="#16A34A" Margin="0,4,0,0"/>
+                    <TextBlock Text="TOTAL EM VENDAS (PDV)" FontSize="11" FontWeight="Bold" Foreground="#64748B" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="TxtResumoVendas" Text="R$ 0,00" FontSize="19" FontWeight="Bold" Foreground="#16A34A" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
             <Border Background="White" CornerRadius="8" Padding="14" Margin="4,0" BorderBrush="#E2E8F0" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="BAIXAS / SAÍDAS DE ESTOQUE" FontSize="11" FontWeight="Bold" Foreground="#64748B"/>
-                    <TextBlock x:Name="TxtResumoBaixas" Text="0 itens" FontSize="20" FontWeight="Bold" Foreground="#DC2626" Margin="0,4,0,0"/>
+                    <TextBlock Text="BAIXAS / SAÍDAS DE ESTOQUE" FontSize="11" FontWeight="Bold" Foreground="#64748B" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="TxtResumoBaixas" Text="0 itens" FontSize="19" FontWeight="Bold" Foreground="#DC2626" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" CornerRadius="8" Padding="14" Margin="8,0,0,0" BorderBrush="#E2E8F0" BorderThickness="1">
+            <Border Background="White" CornerRadius="8" Padding="14" Margin="6,0,0,0" BorderBrush="#E2E8F0" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="ORÇAMENTOS / OS NO PERÍODO" FontSize="11" FontWeight="Bold" Foreground="#64748B"/>
-                    <TextBlock x:Name="TxtResumoOs" Text="0 OS" FontSize="20" FontWeight="Bold" Foreground="#2563EB" Margin="0,4,0,0"/>
+                    <TextBlock Text="ORÇAMENTOS / OS NO PERÍODO" FontSize="11" FontWeight="Bold" Foreground="#64748B" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="TxtResumoOs" Text="0 OS" FontSize="19" FontWeight="Bold" Foreground="#2563EB" Margin="0,4,0,0"/>
                 </StackPanel>
             </Border>
         </UniformGrid>
@@ -44,16 +44,16 @@
         <!-- Abas -->
         <TabControl Grid.Row="2" Background="White" BorderBrush="#E2E8F0">
             <TabItem Header="📦 Baixas e Movimentações de Estoque">
-                <DataGrid x:Name="GridMovimentacoes" Margin="8">
+                <DataGrid x:Name="GridMovimentacoes" Margin="8" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="130"/>
-                        <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="85"/>
-                        <DataGridTextColumn Header="Produto" Binding="{Binding ProdutoNome}" Width="*"/>
-                        <DataGridTextColumn Header="Qtd" Binding="{Binding Quantidade}" Width="65"/>
-                        <DataGridTextColumn Header="Saldo Ant." Binding="{Binding SaldoAnterior}" Width="80"/>
-                        <DataGridTextColumn Header="Saldo Novo" Binding="{Binding SaldoNovo}" Width="85"/>
-                        <DataGridTextColumn Header="Usuário" Binding="{Binding UsuarioNome}" Width="120"/>
-                        <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" Width="180"/>
+                        <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="125"/>
+                        <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="80"/>
+                        <DataGridTextColumn Header="Produto" Binding="{Binding ProdutoNome}" Width="*" MinWidth="130"/>
+                        <DataGridTextColumn Header="Qtd" Binding="{Binding Quantidade}" Width="60"/>
+                        <DataGridTextColumn Header="Saldo Ant." Binding="{Binding SaldoAnterior}" Width="75"/>
+                        <DataGridTextColumn Header="Saldo Novo" Binding="{Binding SaldoNovo}" Width="80"/>
+                        <DataGridTextColumn Header="Usuário" Binding="{Binding UsuarioNome}" Width="110"/>
+                        <DataGridTextColumn Header="Motivo" Binding="{Binding Motivo}" Width="160"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -62,14 +62,14 @@
                 <DockPanel Margin="8">
                     <Button DockPanel.Dock="Top" Content="🖨️ Reimprimir Cupom da Venda Selecionada" Style="{StaticResource SecondaryButton}"
                             HorizontalAlignment="Right" Margin="0,0,0,8" Click="BtnReimprimirCupom_Click"/>
-                    <DataGrid x:Name="GridVendas">
+                    <DataGrid x:Name="GridVendas" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Venda #" Binding="{Binding Id, StringFormat=D6}" Width="80"/>
-                            <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="130"/>
-                            <DataGridTextColumn Header="Cliente" Binding="{Binding ClienteNome}" Width="*"/>
-                            <DataGridTextColumn Header="Operador" Binding="{Binding UsuarioNome}" Width="130"/>
-                            <DataGridTextColumn Header="Pagamento" Binding="{Binding FormaPagamento}" Width="130"/>
-                            <DataGridTextColumn Header="Total" Binding="{Binding Total, StringFormat=R$ {0:N2}}" Width="110"/>
+                            <DataGridTextColumn Header="Venda #" Binding="{Binding Id, StringFormat=D6}" Width="75"/>
+                            <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="125"/>
+                            <DataGridTextColumn Header="Cliente" Binding="{Binding ClienteNome}" Width="*" MinWidth="120"/>
+                            <DataGridTextColumn Header="Operador" Binding="{Binding UsuarioNome}" Width="120"/>
+                            <DataGridTextColumn Header="Pagamento" Binding="{Binding FormaPagamento}" Width="120"/>
+                            <DataGridTextColumn Header="Total" Binding="{Binding Total, StringFormat=R$ {0:N2}}" Width="105"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </DockPanel>
@@ -79,15 +79,15 @@
                 <DockPanel Margin="8">
                     <Button DockPanel.Dock="Top" Content="📄 Gerar / Reimprimir PDF da OS Selecionada" Style="{StaticResource SecondaryButton}"
                             HorizontalAlignment="Right" Margin="0,0,0,8" Click="BtnReimprimirOs_Click"/>
-                    <DataGrid x:Name="GridOrcamentos">
+                    <DataGrid x:Name="GridOrcamentos" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="OS #" Binding="{Binding Id, StringFormat=D5}" Width="70"/>
-                            <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="130"/>
-                            <DataGridTextColumn Header="Cliente" Binding="{Binding ClienteNome}" Width="*"/>
-                            <DataGridTextColumn Header="Equipamento" Binding="{Binding Equipamento}" Width="140"/>
-                            <DataGridTextColumn Header="Quem Fez" Binding="{Binding UsuarioNome}" Width="130"/>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="95"/>
-                            <DataGridTextColumn Header="Valor" Binding="{Binding ValorEstimado, StringFormat=R$ {0:N2}}" Width="105"/>
+                            <DataGridTextColumn Header="OS #" Binding="{Binding Id, StringFormat=D5}" Width="65"/>
+                            <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="125"/>
+                            <DataGridTextColumn Header="Cliente" Binding="{Binding ClienteNome}" Width="*" MinWidth="120"/>
+                            <DataGridTextColumn Header="Equipamento" Binding="{Binding Equipamento}" Width="130"/>
+                            <DataGridTextColumn Header="Quem Fez" Binding="{Binding UsuarioNome}" Width="120"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90"/>
+                            <DataGridTextColumn Header="Valor" Binding="{Binding ValorEstimado, StringFormat=R$ {0:N2}}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </DockPanel>

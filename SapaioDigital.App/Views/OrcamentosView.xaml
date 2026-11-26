@@ -3,26 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="460"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.42*" MinWidth="360" MaxWidth="490"/>
+            <ColumnDefinition Width="0.58*" MinWidth="420"/>
         </Grid.ColumnDefinitions>
 
         <!-- Formulário de Orçamento / OS -->
-        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="18" Margin="0,0,16,0" BorderBrush="#E2E8F0" BorderThickness="1">
+        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <!-- Cabeçalho com Info da Loja -->
-                    <Border Background="#F8FAFC" CornerRadius="6" Padding="10" BorderBrush="#E2E8F0" BorderThickness="1" Margin="0,0,0,14">
+                    <Border Background="#F8FAFC" CornerRadius="6" Padding="10" BorderBrush="#E2E8F0" BorderThickness="1" Margin="0,0,0,12">
                         <DockPanel>
-                            <Image x:Name="ImgLojaLogo" Width="52" Height="42" Stretch="Uniform" Margin="0,0,10,0"/>
+                            <Border Width="58" Height="46" ClipToBounds="True" CornerRadius="4" Background="White" Margin="0,0,10,0">
+                                <Image x:Name="ImgLojaLogo" MaxWidth="54" MaxHeight="42" Stretch="Uniform"
+                                       RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock x:Name="TxtLojaNome" Text="Sapaio Digital" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
-                                <TextBlock x:Name="TxtLojaTel" Text="Tel:" FontSize="11.5" Foreground="#64748B"/>
+                                <TextBlock x:Name="TxtLojaNome" Text="Sapaio Digital" FontWeight="Bold" FontSize="14" Foreground="#0F172A" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TxtLojaTel" Text="Tel:" FontSize="11.5" Foreground="#64748B" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DockPanel>
                     </Border>
 
-                    <TextBlock x:Name="TxtTituloForm" Text="Novo Orçamento / Ordem de Serviço" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,12"/>
+                    <TextBlock x:Name="TxtTituloForm" Text="Novo Orçamento / Ordem de Serviço" FontSize="15.5" FontWeight="Bold" Foreground="#0F172A" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
                     <TextBlock Text="Cliente *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <ComboBox x:Name="CmbCliente" DisplayMemberPath="Nome" SelectedValuePath="Id" Margin="0,0,0,10"/>
@@ -31,10 +34,10 @@
                     <TextBox x:Name="TxtEquipamento" Margin="0,0,0,10" ToolTip="Ex: Notebook Acer Aspire, PC Gamer, Impressora Epson"/>
 
                     <TextBlock Text="Problema Relatado *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtProblema" Height="72" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
+                    <TextBox x:Name="TxtProblema" Height="68" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
 
                     <TextBlock Text="Serviços Previstos / Peças / Observações" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtServicos" Height="64" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
+                    <TextBox x:Name="TxtServicos" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
 
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
@@ -69,7 +72,7 @@
                             <DatePicker x:Name="DpData"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Responsável (Usuário Conectado)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                            <TextBlock Text="Responsável (Conectado)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                             <TextBox x:Name="TxtResponsavel" IsReadOnly="True" Background="#F1F5F9" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Grid>
@@ -86,20 +89,20 @@
         <!-- Lista de Orçamentos / OS -->
         <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="16" BorderBrush="#E2E8F0" BorderThickness="1">
             <DockPanel>
-                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                    <TextBox x:Name="TxtBusca" Width="280" ToolTip="Buscar por cliente, equipamento ou problema" TextChanged="TxtBusca_TextChanged"/>
-                    <Button DockPanel.Dock="Right" Content="🖨️ Imprimir PDF Selecionada" Style="{StaticResource SecondaryButton}" HorizontalAlignment="Right" Click="BtnImprimirSelecionada_Click"/>
-                </DockPanel>
+                <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                    <TextBox x:Name="TxtBusca" Width="220" Margin="0,0,8,4" ToolTip="Buscar por cliente, equipamento ou problema" TextChanged="TxtBusca_TextChanged"/>
+                    <Button Content="🖨️ Imprimir PDF Selecionada" Style="{StaticResource SecondaryButton}" Margin="0,0,0,4" Click="BtnImprimirSelecionada_Click"/>
+                </WrapPanel>
 
-                <DataGrid x:Name="GridOrcamentos" SelectionChanged="GridOrcamentos_SelectionChanged">
+                <DataGrid x:Name="GridOrcamentos" SelectionChanged="GridOrcamentos_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="OS #" Binding="{Binding Id, StringFormat=D5}" Width="65"/>
-                        <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="125"/>
-                        <DataGridTextColumn Header="Cliente" Binding="{Binding ClienteNome}" Width="*"/>
-                        <DataGridTextColumn Header="Equipamento" Binding="{Binding Equipamento}" Width="140"/>
-                        <DataGridTextColumn Header="Responsável" Binding="{Binding UsuarioNome}" Width="120"/>
-                        <DataGridTextColumn Header="Valor" Binding="{Binding ValorEstimado, StringFormat=R$ {0:N2}}" Width="95"/>
-                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90"/>
+                        <DataGridTextColumn Header="OS #" Binding="{Binding Id, StringFormat=D5}" Width="60"/>
+                        <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="118"/>
+                        <DataGridTextColumn Header="Cliente" Binding="{Binding ClienteNome}" Width="*" MinWidth="120"/>
+                        <DataGridTextColumn Header="Equipamento" Binding="{Binding Equipamento}" Width="120"/>
+                        <DataGridTextColumn Header="Responsável" Binding="{Binding UsuarioNome}" Width="110"/>
+                        <DataGridTextColumn Header="Valor" Binding="{Binding ValorEstimado, StringFormat=R$ {0:N2}}" Width="90"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="85"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>

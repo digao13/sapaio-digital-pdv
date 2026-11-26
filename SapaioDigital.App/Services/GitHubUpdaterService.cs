@@ -10,11 +10,17 @@ using SapaioDigital.App.Data;
 
 namespace SapaioDigital.App.Services;
 
-public record AtualizacaoInfo(bool Disponivel, string VersaoAtual, string NovaVersao, string Notas, string DownloadUrl);
+public record AtualizacaoInfo(
+    bool Disponivel,
+    string VersaoAtual,
+    string NovaVersao,
+    string Notas,
+    string DownloadUrl,
+    bool EhInstalador);
 
 /// <summary>
-/// Integração com GitHub Releases para atualização do aplicativo sem sobrescrever o banco SQLite
-/// (o banco fica protegido em %LocalAppData%\SapaioDigital e recebe backup automático antes da troca de binários).
+/// Integração com GitHub Releases para atualização do aplicativo sem sobrescrever o banco SQLite.
+/// Prioriza o instalador Inno Setup (.exe) em modo silencioso e mantém fallback para pacote portátil (.zip).
 /// </summary>
 public static class GitHubUpdaterService
 {
@@ -23,7 +29,7 @@ public static class GitHubUpdaterService
 
     private static readonly HttpClient Http = new()
     {
-        Timeout = TimeSpan.FromSeconds(30)
+        Timeout = TimeSpan.FromMinutes(3)
     };
 
     static GitHubUpdaterService()
@@ -46,7 +52,7 @@ public static class GitHubUpdaterService
         using var resp = await Http.GetAsync(url);
         if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            return new AtualizacaoInfo(false, versaoAtual, versaoAtual, "Nenhuma release publicada ainda no GitHub.", "");
+            return new AtualizacaoInfo(false, versaoAtual, versaoAtual, "Nenhuma release publicada ainda no GitHub.", "", false);
         }
         resp.EnsureSuccessStatusCode();
 
@@ -56,27 +62,31 @@ public static class GitHubUpdaterService
 
         string tag = root.GetProperty("tag_name").GetString()?.TrimStart('v', 'V') ?? versaoAtual;
         string notas = root.TryGetProperty("body", out var bodyEl) ? (bodyEl.GetString() ?? "") : "";
-        string downloadUrl = "";
+        string installerUrl = "";
+        string zipUrl = "";
 
         if (root.TryGetProperty("assets", out var assets))
         {
             foreach (var asset in assets.EnumerateArray())
             {
                 string name = asset.GetProperty("name").GetString() ?? "";
-                if (name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                {
-                    downloadUrl = asset.GetProperty("browser_download_url").GetString() ?? "";
-                    break;
-                }
+                string dl = asset.GetProperty("browser_download_url").GetString() ?? "";
+                if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && name.Contains("Setup", StringComparison.OrdinalIgnoreCase))
+                    installerUrl = dl;
+                else if (name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                    zipUrl = dl;
             }
         }
+
+        bool ehInstalador = !string.IsNullOrWhiteSpace(installerUrl);
+        string chosenUrl = ehInstalador ? installerUrl : zipUrl;
 
         bool disponivel = Version.TryParse(tag, out var vNova)
                        && Version.TryParse(versaoAtual, out var vAtual)
                        && vNova > vAtual
-                       && !string.IsNullOrWhiteSpace(downloadUrl);
+                       && !string.IsNullOrWhiteSpace(chosenUrl);
 
-        return new AtualizacaoInfo(disponivel, versaoAtual, tag, notas, downloadUrl);
+        return new AtualizacaoInfo(disponivel, versaoAtual, tag, notas, chosenUrl, ehInstalador);
     }
 
     public static async Task BaixarEAplicarAtualizacaoAsync(string downloadUrl)
@@ -85,9 +95,31 @@ public static class GitHubUpdaterService
         DatabaseService.CriarBackupSeguro("pre_update_github");
 
         string tempRoot = Path.Combine(Path.GetTempPath(), "SapaioDigitalUpdate_" + Guid.NewGuid().ToString("N")[..8]);
+        Directory.CreateDirectory(tempRoot);
+
+        bool ehInstalador = downloadUrl.EndsWith(".exe", StringComparison.OrdinalIgnoreCase);
+
+        if (ehInstalador)
+        {
+            string setupPath = Path.Combine(tempRoot, "SapaioDigital-Setup.exe");
+            using (var stream = await Http.GetStreamAsync(downloadUrl))
+            using (var fs = File.Create(setupPath))
+            {
+                await stream.CopyToAsync(fs);
+            }
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = setupPath,
+                Arguments = "/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS",
+                UseShellExecute = true
+            });
+            return;
+        }
+
+        // Fallback portátil (.zip)
         string zipPath = Path.Combine(tempRoot, "update.zip");
         string extractDir = Path.Combine(tempRoot, "files");
-        Directory.CreateDirectory(tempRoot);
         Directory.CreateDirectory(extractDir);
 
         using (var stream = await Http.GetStreamAsync(downloadUrl))
@@ -102,8 +134,6 @@ public static class GitHubUpdaterService
         string exeName = Path.GetFileName(Environment.ProcessPath ?? "SapaioDigital.App.exe");
         int pid = Environment.ProcessId;
 
-        // Script externo que aguarda o app fechar, substitui apenas os binários e reinicia.
-        // Nunca toca em %LocalAppData%\SapaioDigital (onde ficam o banco SQLite e a logo).
         string batPath = Path.Combine(tempRoot, "apply_update.bat");
         string batContent = $@"@echo off
 timeout /t 2 /nobreak > nul
