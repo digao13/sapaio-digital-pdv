@@ -1,0 +1,108 @@
+<UserControl x:Class="SapaioDigital.App.Views.OrcamentosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="460"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Formulário de Orçamento / OS -->
+        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="18" Margin="0,0,16,0" BorderBrush="#E2E8F0" BorderThickness="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <!-- Cabeçalho com Info da Loja -->
+                    <Border Background="#F8FAFC" CornerRadius="6" Padding="10" BorderBrush="#E2E8F0" BorderThickness="1" Margin="0,0,0,14">
+                        <DockPanel>
+                            <Image x:Name="ImgLojaLogo" Width="52" Height="42" Stretch="Uniform" Margin="0,0,10,0"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="TxtLojaNome" Text="Sapaio Digital" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                <TextBlock x:Name="TxtLojaTel" Text="Tel:" FontSize="11.5" Foreground="#64748B"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <TextBlock x:Name="TxtTituloForm" Text="Novo Orçamento / Ordem de Serviço" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Cliente *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="CmbCliente" DisplayMemberPath="Nome" SelectedValuePath="Id" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Equipamento / Dispositivo (Informática)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtEquipamento" Margin="0,0,0,10" ToolTip="Ex: Notebook Acer Aspire, PC Gamer, Impressora Epson"/>
+
+                    <TextBlock Text="Problema Relatado *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtProblema" Height="72" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Serviços Previstos / Peças / Observações" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtServicos" Height="64" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
+
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Valor Estimado (R$)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtValor" Text="0,00"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Status" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="CmbStatus">
+                                <ComboBoxItem Content="Aberto" IsSelected="True"/>
+                                <ComboBoxItem Content="Aprovado"/>
+                                <ComboBoxItem Content="Em Serviço"/>
+                                <ComboBoxItem Content="Concluído"/>
+                                <ComboBoxItem Content="Cancelado"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Data e Hora" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                            <DatePicker x:Name="DpData"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Responsável (Usuário Conectado)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtResponsavel" IsReadOnly="True" Background="#F1F5F9" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <WrapPanel>
+                        <Button Content="Salvar OS" Style="{StaticResource PrimaryButton}" Click="BtnSalvar_Click" Margin="0,0,8,8"/>
+                        <Button Content="Salvar e Imprimir PDF" Style="{StaticResource SuccessButton}" Click="BtnSalvarImprimir_Click" Margin="0,0,8,8"/>
+                        <Button Content="Nova OS" Style="{StaticResource SecondaryButton}" Click="BtnLimpar_Click" Margin="0,0,0,8"/>
+                    </WrapPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Lista de Orçamentos / OS -->
+        <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="16" BorderBrush="#E2E8F0" BorderThickness="1">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                    <TextBox x:Name="TxtBusca" Width="280" ToolTip="Buscar por cliente, equipamento ou problema" TextChanged="TxtBusca_TextChanged"/>
+                    <Button DockPanel.Dock="Right" Content="🖨️ Imprimir PDF Selecionada" Style="{StaticResource SecondaryButton}" HorizontalAlignment="Right" Click="BtnImprimirSelecionada_Click"/>
+                </DockPanel>
+
+                <DataGrid x:Name="GridOrcamentos" SelectionChanged="GridOrcamentos_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="OS #" Binding="{Binding Id, StringFormat=D5}" Width="65"/>
+                        <DataGridTextColumn Header="Data/Hora" Binding="{Binding DataHora, StringFormat=dd/MM/yyyy HH:mm}" Width="125"/>
+                        <DataGridTextColumn Header="Cliente" Binding="{Binding ClienteNome}" Width="*"/>
+                        <DataGridTextColumn Header="Equipamento" Binding="{Binding Equipamento}" Width="140"/>
+                        <DataGridTextColumn Header="Responsável" Binding="{Binding UsuarioNome}" Width="120"/>
+                        <DataGridTextColumn Header="Valor" Binding="{Binding ValorEstimado, StringFormat=R$ {0:N2}}" Width="95"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

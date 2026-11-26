@@ -1,0 +1,68 @@
+<Window x:Class="SapaioDigital.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sapaio Digital - Sistema de Vendas e OS"
+        Height="760" Width="1240" MinHeight="640" MinWidth="1024"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="#F1F5F9">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="235"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="#0F172A">
+            <DockPanel>
+                <!-- Cabeçalho da Loja na Sidebar -->
+                <StackPanel DockPanel.Dock="Top" Margin="16,20,16,18">
+                    <Border Background="#1E293B" CornerRadius="8" Padding="10" Margin="0,0,0,10">
+                        <Image x:Name="ImgSidebarLogo" Height="54" Stretch="Uniform"/>
+                    </Border>
+                    <TextBlock x:Name="TxtSidebarLoja" Text="Sapaio Digital" Foreground="White" FontSize="15" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <TextBlock x:Name="TxtSidebarTelefone" Text="" Foreground="#94A3B8" FontSize="11.5" TextAlignment="Center" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <!-- Rodapé com Usuário Conectado -->
+                <Border DockPanel.Dock="Bottom" Background="#1E293B" Padding="14,12" Margin="10,0,10,14" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock Text="OPERADOR CONECTADO" FontSize="10" Foreground="#94A3B8" FontWeight="Bold"/>
+                        <TextBlock x:Name="TxtUsuarioConectado" Text="Admin" Foreground="White" FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                        <TextBlock x:Name="TxtVersaoApp" Text="v1.0.0" Foreground="#64748B" FontSize="11" Margin="0,4,0,6"/>
+                        <Button Content="Trocar Usuário" Style="{StaticResource SecondaryButton}" Padding="8,5" FontSize="11.5" Click="BtnTrocarUsuario_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Menu de Navegação -->
+                <StackPanel>
+                    <Button Content="🛒  PDV (Vendas)" Style="{StaticResource SidebarButton}" Click="NavPdv_Click"/>
+                    <Button Content="🔧  Orçamentos / OS" Style="{StaticResource SidebarButton}" Click="NavOrcamentos_Click"/>
+                    <Button Content="📦  Produtos e Estoque" Style="{StaticResource SidebarButton}" Click="NavProdutos_Click"/>
+                    <Button Content="👥  Clientes" Style="{StaticResource SidebarButton}" Click="NavClientes_Click"/>
+                    <Button Content="📊  Relatórios" Style="{StaticResource SidebarButton}" Click="NavRelatorios_Click"/>
+                    <Separator Background="#1E293B" Margin="16,10"/>
+                    <Button Content="👤  Usuários" Style="{StaticResource SidebarButton}" Click="NavUsuarios_Click"/>
+                    <Button Content="🏪  Dados da Loja &amp; Atualização" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Conteúdo Principal -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="24,0">
+                <DockPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="TxtTituloPagina" Text="PDV — Ponto de Venda" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock x:Name="TxtDataHoraTopo" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#64748B" FontSize="12.5"/>
+                </DockPanel>
+            </Border>
+
+            <ContentControl x:Name="MainContent" Grid.Row="1" Margin="20"/>
+        </Grid>
+    </Grid>
+</Window>

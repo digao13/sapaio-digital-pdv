@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SapaioDigital.App/SapaioDigital.App.csproj" />
+  <Project Path="SapaioDigital.Tests/SapaioDigital.Tests.csproj" />
+</Solution>
