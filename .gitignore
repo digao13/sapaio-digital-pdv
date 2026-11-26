@@ -12,3 +12,6 @@ installer/redist/
 installer/output/
 publish_out/
 
+
+publish_local/
+

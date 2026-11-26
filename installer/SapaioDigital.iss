@@ -1,4 +1,4 @@
-#ifndef AppVersion
+﻿#ifndef AppVersion
   #define AppVersion "1.0.2"
 #endif
 
@@ -19,6 +19,7 @@ PrivilegesRequired=admin
 CloseApplications=yes
 RestartApplications=yes
 UninstallDisplayIcon={app}\SapaioDigital.App.exe
+SetupIconFile=..\SapaioDigital.App\Assets\app_icon.ico
 
 [Languages]
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
