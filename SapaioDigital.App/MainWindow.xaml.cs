@@ -29,6 +29,24 @@ public partial class MainWindow : Window
         TxtDataHoraTopo.Text = DateTime.Now.ToString("dd/MM/yyyy  HH:mm:ss");
 
         NavegarParaPdv();
+        Loaded += async (_, _) => await VerificarAtualizacaoSilenciosaAsync();
+    }
+
+    private async System.Threading.Tasks.Task VerificarAtualizacaoSilenciosaAsync()
+    {
+        try
+        {
+            var info = await GitHubUpdaterService.VerificarAtualizacaoAsync();
+            if (info.Disponivel)
+            {
+                BtnUpdateDisponivel.Content = $"⬇ Atualizar para v{info.NovaVersao}";
+                BtnUpdateDisponivel.Visibility = Visibility.Visible;
+            }
+        }
+        catch
+        {
+            // Sem internet ou limite de API: ignora silenciosamente
+        }
     }
 
     private void AtualizarBotaoTema()
@@ -57,6 +75,7 @@ public partial class MainWindow : Window
             BtnNavRel.Content = "📊";
             BtnNavUsu.Content = "👤";
             BtnNavCfg.Content = "🏪";
+            BtnNavUpd.Content = "🔄";
             BtnNavPdv.HorizontalContentAlignment = HorizontalAlignment.Center;
             BtnNavOrc.HorizontalContentAlignment = HorizontalAlignment.Center;
             BtnNavProd.HorizontalContentAlignment = HorizontalAlignment.Center;
@@ -64,10 +83,11 @@ public partial class MainWindow : Window
             BtnNavRel.HorizontalContentAlignment = HorizontalAlignment.Center;
             BtnNavUsu.HorizontalContentAlignment = HorizontalAlignment.Center;
             BtnNavCfg.HorizontalContentAlignment = HorizontalAlignment.Center;
+            BtnNavUpd.HorizontalContentAlignment = HorizontalAlignment.Center;
         }
         else
         {
-            ColSidebar.Width = new GridLength(235);
+            ColSidebar.Width = new GridLength(240);
             PanelSidebarHeader.Visibility = Visibility.Visible;
             PanelSidebarFooter.Visibility = Visibility.Visible;
             BtnNavPdv.Content = "🛒  PDV (Vendas)";
@@ -76,7 +96,8 @@ public partial class MainWindow : Window
             BtnNavCli.Content = "👥  Clientes";
             BtnNavRel.Content = "📊  Relatórios";
             BtnNavUsu.Content = "👤  Usuários";
-            BtnNavCfg.Content = "🏪  Loja & Atualização";
+            BtnNavCfg.Content = "🏪  Dados da Loja";
+            BtnNavUpd.Content = "🔄  Atualizações (GitHub)";
             BtnNavPdv.HorizontalContentAlignment = HorizontalAlignment.Left;
             BtnNavOrc.HorizontalContentAlignment = HorizontalAlignment.Left;
             BtnNavProd.HorizontalContentAlignment = HorizontalAlignment.Left;
@@ -84,6 +105,7 @@ public partial class MainWindow : Window
             BtnNavRel.HorizontalContentAlignment = HorizontalAlignment.Left;
             BtnNavUsu.HorizontalContentAlignment = HorizontalAlignment.Left;
             BtnNavCfg.HorizontalContentAlignment = HorizontalAlignment.Left;
+            BtnNavUpd.HorizontalContentAlignment = HorizontalAlignment.Left;
         }
     }
 

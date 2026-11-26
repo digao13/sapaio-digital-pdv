@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -325,7 +325,7 @@ public static class DatabaseService
         if (usuario.Id == 0)
         {
             if (string.IsNullOrWhiteSpace(senhaPlana))
-                throw new InvalidOperationException("Informe uma senha para o novo usuÃ¡rio.");
+                throw new InvalidOperationException("Informe uma senha para o novo usuário.");
 
             cmd.CommandText = @"
                 INSERT INTO Usuarios (Nome, Login, SenhaHash, Perfil, Ativo, CriadoEm)
@@ -476,7 +476,7 @@ public static class DatabaseService
             getCmd.CommandText = "SELECT Nome, Quantidade FROM Produtos WHERE Id = @id;";
             getCmd.Parameters.AddWithValue("@id", produtoId);
             using var r = getCmd.ExecuteReader();
-            if (!r.Read()) throw new InvalidOperationException("Produto nÃ£o encontrado.");
+            if (!r.Read()) throw new InvalidOperationException("Produto não encontrado.");
             nomeProd = r.GetString(0);
             saldoAtual = r.GetInt32(1);
         }
@@ -592,7 +592,7 @@ public static class DatabaseService
             cmd.ExecuteNonQuery();
     }
 
-    // ==================== ORÃ‡AMENTOS / OS ====================
+    // ==================== ORÇAMENTOS / OS ====================
     public static int SalvarOrcamento(Orcamento os)
     {
         using var conn = OpenConnection();
@@ -712,13 +712,13 @@ public static class DatabaseService
                 checkCmd.Parameters.AddWithValue("@pid", item.ProdutoId);
                 using var r = checkCmd.ExecuteReader();
                 if (!r.Read())
-                    throw new InvalidOperationException($"Produto '{item.ProdutoNome}' nÃ£o encontrado.");
+                    throw new InvalidOperationException($"Produto '{item.ProdutoNome}' não encontrado.");
                 nomeProd = r.GetString(0);
                 saldoAtual = r.GetInt32(1);
             }
 
             if (saldoAtual < item.Quantidade)
-                throw new InvalidOperationException($"Estoque insuficiente para '{nomeProd}'. DisponÃ­vel: {saldoAtual}, Solicitado: {item.Quantidade}.");
+                throw new InvalidOperationException($"Estoque insuficiente para '{nomeProd}'. Disponível: {saldoAtual}, Solicitado: {item.Quantidade}.");
 
             int novoSaldo = saldoAtual - item.Quantidade;
             using (var updCmd = conn.CreateCommand())
@@ -873,7 +873,7 @@ public static class DatabaseService
         return venda;
     }
 
-    // ==================== RELATÃ“RIOS ====================
+    // ==================== RELATÓRIOS ====================
     public static List<MovimentacaoEstoque> ListarMovimentacoes(DateTime? inicio = null, DateTime? fim = null, string? tipo = null)
     {
         var lista = new List<MovimentacaoEstoque>();

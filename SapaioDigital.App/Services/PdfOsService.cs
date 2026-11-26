@@ -43,14 +43,14 @@ public static class PdfOsService
                         {
                             info.Item().Text(loja.RazaoSocial).FontSize(18).Bold().FontColor("#1E293B");
                             info.Item().Text($"Telefone / WhatsApp: {loja.Telefone}").FontSize(10).FontColor("#475569");
-                            info.Item().Text("AssistÃªncia TÃ©cnica e InformÃ¡tica").FontSize(9).FontColor("#64748B");
+                            info.Item().Text("Assistência Técnica e Informática").FontSize(9).FontColor("#64748B");
                         });
 
                         row.ConstantItem(165).Border(1).BorderColor("#CBD5E1").Background("#F8FAFC").Padding(8).Column(box =>
                         {
-                            box.Item().Text($"ORDEM DE SERVIÃ‡O NÂº {os.Id:D5}").Bold().FontSize(11).FontColor("#0F172A");
+                            box.Item().Text($"ORDEM DE SERVIÇO Nº {os.Id:D5}").Bold().FontSize(11).FontColor("#0F172A");
                             box.Item().Text($"Data: {os.DataHora:dd/MM/yyyy}").FontSize(9);
-                            box.Item().Text($"HorÃ¡rio: {os.DataHora:HH:mm:ss}").FontSize(9);
+                            box.Item().Text($"Horário: {os.DataHora:HH:mm:ss}").FontSize(9);
                             box.Item().Text($"Status: {os.Status}").Bold().FontSize(9).FontColor("#2563EB");
                         });
                     });
@@ -68,16 +68,16 @@ public static class PdfOsService
                         c.Item().Text("DADOS DO CLIENTE").Bold().FontSize(10).FontColor("#1E293B");
                         c.Item().PaddingTop(4).Text($"Nome: {os.ClienteNome}");
                         c.Item().Text($"Telefone / WhatsApp: {os.ClienteTelefone}");
-                        c.Item().Text($"EndereÃ§o: {os.ClienteEndereco}");
+                        c.Item().Text($"Endereço: {os.ClienteEndereco}");
                     });
 
-                    // Equipamento & ResponsÃ¡vel
+                    // Equipamento & Responsável
                     col.Item().Border(1).BorderColor("#E2E8F0").Padding(10).Column(c =>
                     {
-                        c.Item().Text("INFORMAÃ‡Ã•ES DO ATENDIMENTO").Bold().FontSize(10).FontColor("#1E293B");
-                        c.Item().PaddingTop(4).Text($"Equipamento / Dispositivo: {(string.IsNullOrWhiteSpace(os.Equipamento) ? "NÃ£o informado" : os.Equipamento)}");
-                        c.Item().Text($"OrÃ§amento / OS feito por: {os.UsuarioNome}").Bold();
-                        c.Item().Text($"Data e Hora do Registro: {os.DataHora:dd/MM/yyyy 'Ã s' HH:mm:ss}");
+                        c.Item().Text("INFORMAÇÕES DO ATENDIMENTO").Bold().FontSize(10).FontColor("#1E293B");
+                        c.Item().PaddingTop(4).Text($"Equipamento / Dispositivo: {(string.IsNullOrWhiteSpace(os.Equipamento) ? "Não informado" : os.Equipamento)}");
+                        c.Item().Text($"Orçamento / OS feito por: {os.UsuarioNome}").Bold();
+                        c.Item().Text($"Data e Hora do Registro: {os.DataHora:dd/MM/yyyy 'às' HH:mm:ss}");
                     });
 
                     // Problema Relatado
@@ -87,11 +87,11 @@ public static class PdfOsService
                         c.Item().PaddingTop(4).Text(os.ProblemaRelatado);
                     });
 
-                    // ServiÃ§os / ObservaÃ§Ãµes TÃ©cnicas
+                    // Serviços / Observações Técnicas
                     col.Item().Border(1).BorderColor("#E2E8F0").Padding(10).Column(c =>
                     {
-                        c.Item().Text("SERVIÃ‡OS PREVISTOS / OBSERVAÃ‡Ã•ES TÃ‰CNICAS").Bold().FontSize(10).FontColor("#1E293B");
-                        c.Item().PaddingTop(4).Text(string.IsNullOrWhiteSpace(os.ServicosObservacoes) ? "Sem observaÃ§Ãµes adicionais." : os.ServicosObservacoes);
+                        c.Item().Text("SERVIÇOS PREVISTOS / OBSERVAÇÕES TÉCNICAS").Bold().FontSize(10).FontColor("#1E293B");
+                        c.Item().PaddingTop(4).Text(string.IsNullOrWhiteSpace(os.ServicosObservacoes) ? "Sem observações adicionais." : os.ServicosObservacoes);
                     });
 
                     // Valor Estimado
@@ -115,14 +115,14 @@ public static class PdfOsService
                         {
                             s.Item().LineHorizontal(1).LineColor("#475569");
                             s.Item().PaddingTop(4).AlignCenter().Text($"{loja.RazaoSocial} ({os.UsuarioNome})").FontSize(9);
-                            s.Item().AlignCenter().Text("ResponsÃ¡vel TÃ©cnico / Loja").FontSize(8).FontColor("#64748B");
+                            s.Item().AlignCenter().Text("Responsável Técnico / Loja").FontSize(8).FontColor("#64748B");
                         });
                     });
                 });
 
                 page.Footer().AlignCenter().Text(txt =>
                 {
-                    txt.Span($"{loja.RazaoSocial} â€¢ Tel: {loja.Telefone} â€¢ Emitido em {DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(8).FontColor("#64748B");
+                    txt.Span($"{loja.RazaoSocial} • Tel: {loja.Telefone} • Emitido em {DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(8).FontColor("#64748B");
                 });
             });
         }).GeneratePdf(filePath);

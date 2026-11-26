@@ -1,4 +1,4 @@
-<UserControl x:Class="SapaioDigital.App.Views.UsuariosView"
+﻿<UserControl x:Class="SapaioDigital.App.Views.UsuariosView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
@@ -22,7 +22,7 @@
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
             <Border Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="18" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" VerticalAlignment="Top">
                 <StackPanel>
-                    <TextBlock x:Name="TxtTituloForm" Text="Novo UsuÃ¡rio" FontSize="15.5" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,12"/>
+                    <TextBlock x:Name="TxtTituloForm" Text="Novo Usuário" FontSize="15.5" FontWeight="Bold" Foreground="{DynamicResource TextMainBrush}" Margin="0,0,0,12"/>
 
                     <TextBlock Text="Nome Completo *" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <TextBox x:Name="TxtNome" Margin="0,0,0,10"/>
@@ -39,10 +39,10 @@
                         <ComboBoxItem Content="Administrador"/>
                     </ComboBox>
 
-                    <CheckBox x:Name="ChkAtivo" Content="UsuÃ¡rio Ativo" IsChecked="True" Margin="0,4,0,16"/>
+                    <CheckBox x:Name="ChkAtivo" Content="Usuário Ativo" IsChecked="True" Margin="0,4,0,16"/>
 
                     <WrapPanel>
-                        <Button Content="Salvar UsuÃ¡rio" Style="{StaticResource PrimaryButton}" Click="BtnSalvar_Click" Margin="0,0,8,6"/>
+                        <Button Content="Salvar Usuário" Style="{StaticResource PrimaryButton}" Click="BtnSalvar_Click" Margin="0,0,8,6"/>
                         <Button Content="Limpar / Novo" Style="{StaticResource SecondaryButton}" Click="BtnLimpar_Click" Margin="0,0,0,6"/>
                     </WrapPanel>
                 </StackPanel>

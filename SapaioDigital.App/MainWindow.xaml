@@ -5,10 +5,11 @@
         Height="760" Width="1240" MinHeight="600" MinWidth="960"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
-        Background="{DynamicResource BgMainBrush}">
+        Background="{DynamicResource BgMainBrush}"
+        Foreground="{DynamicResource TextMainBrush}">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="ColSidebar" Width="235"/>
+            <ColumnDefinition x:Name="ColSidebar" Width="240"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -17,8 +18,8 @@
             <DockPanel>
                 <!-- Cabeçalho da Loja na Sidebar -->
                 <StackPanel x:Name="PanelSidebarHeader" DockPanel.Dock="Top" Margin="14,16,14,14">
-                    <Border Background="#1E293B" CornerRadius="8" Padding="8" Margin="0,0,0,10" ClipToBounds="True" MinHeight="64">
-                        <Image x:Name="ImgSidebarLogo" MaxHeight="56" MaxWidth="185" Stretch="Uniform"
+                    <Border Background="#1E293B" CornerRadius="8" Padding="8" Margin="0,0,0,10" ClipToBounds="True" MinHeight="68">
+                        <Image x:Name="ImgSidebarLogo" MaxHeight="58" MaxWidth="190" Stretch="Uniform"
                                RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <TextBlock x:Name="TxtSidebarLoja" Text="Sapaio Digital" Foreground="White" FontSize="15" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center"/>
@@ -30,8 +31,8 @@
                     <StackPanel>
                         <TextBlock Text="OPERADOR CONECTADO" FontSize="10" Foreground="#94A3B8" FontWeight="Bold"/>
                         <TextBlock x:Name="TxtUsuarioConectado" Text="Admin" Foreground="White" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,2,0,0"/>
-                        <TextBlock x:Name="TxtVersaoApp" Text="v1.0.2" Foreground="#64748B" FontSize="11" Margin="0,4,0,6"/>
-                        <Button Content="Trocar Usuário" Style="{StaticResource SecondaryButton}" Padding="8,5" FontSize="11.5" Click="BtnTrocarUsuario_Click"/>
+                        <TextBlock x:Name="TxtVersaoApp" Text="v1.0.3" Foreground="#94A3B8" FontSize="11" Margin="0,4,0,8"/>
+                        <Button Content="Trocar Usuário" Style="{StaticResource SecondaryButton}" Padding="8,6" FontSize="11.5" Click="BtnTrocarUsuario_Click"/>
                     </StackPanel>
                 </Border>
 
@@ -45,7 +46,8 @@
                         <Button x:Name="BtnNavRel" Content="📊  Relatórios" ToolTip="Relatórios" Style="{StaticResource SidebarButton}" Click="NavRelatorios_Click"/>
                         <Separator Background="#1E293B" Margin="14,10"/>
                         <Button x:Name="BtnNavUsu" Content="👤  Usuários" ToolTip="Usuários" Style="{StaticResource SidebarButton}" Click="NavUsuarios_Click"/>
-                        <Button x:Name="BtnNavCfg" Content="🏪  Loja &amp; Atualização" ToolTip="Dados da Loja e Atualização" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click"/>
+                        <Button x:Name="BtnNavCfg" Content="🏪  Dados da Loja" ToolTip="Dados da Loja e Backup" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click"/>
+                        <Button x:Name="BtnNavUpd" Content="🔄  Atualizações (GitHub)" ToolTip="Verificar e instalar atualizações do GitHub" Style="{StaticResource SidebarButton}" Click="NavConfiguracoes_Click"/>
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>
@@ -54,7 +56,7 @@
         <!-- Conteúdo Principal -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="56"/>
+                <RowDefinition Height="58"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -66,6 +68,8 @@
                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button x:Name="BtnUpdateDisponivel" Content="⬇ Nova versão disponível!" Style="{StaticResource SuccessButton}"
+                                Padding="10,6" FontSize="12" Margin="0,0,10,0" Visibility="Collapsed" Click="NavConfiguracoes_Click"/>
                         <Button x:Name="BtnToggleTema" Content="🌙 Tema Escuro" Style="{StaticResource SecondaryButton}" Padding="10,6" FontSize="12" Margin="0,0,14,0"
                                 Click="BtnToggleTema_Click"/>
                         <TextBlock x:Name="TxtDataHoraTopo" VerticalAlignment="Center" Foreground="{DynamicResource TextMutedBrush}" FontSize="12.5"/>

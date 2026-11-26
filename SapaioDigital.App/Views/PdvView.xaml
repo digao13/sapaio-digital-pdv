@@ -1,4 +1,4 @@
-<UserControl x:Class="SapaioDigital.App.Views.PdvView"
+﻿<UserControl x:Class="SapaioDigital.App.Views.PdvView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
@@ -7,7 +7,7 @@
             <ColumnDefinition Width="0.36*" MinWidth="320" MaxWidth="460"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Lado Esquerdo: CabeÃ§alho Loja + Busca/Leitor + Carrinho -->
+        <!-- Lado Esquerdo: Cabeçalho Loja + Busca/Leitor + Carrinho -->
         <Grid Grid.Column="0" Margin="0,0,14,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -31,7 +31,7 @@
                 </DockPanel>
             </Border>
 
-            <!-- Leitor de CÃ³digo de Barras / Busca RÃ¡pida -->
+            <!-- Leitor de Código de Barras / Busca Rápida -->
             <Border Grid.Row="1" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="12" Margin="0,0,0,10" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -40,7 +40,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                        <TextBlock Text="CÃ³digo de Barras ou Nome do Produto (Enter)" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" TextTrimming="CharacterEllipsis" Margin="0,0,0,4"/>
+                        <TextBlock Text="Código de Barras ou Nome do Produto (Enter)" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" TextTrimming="CharacterEllipsis" Margin="0,0,0,4"/>
                         <TextBox x:Name="TxtBuscaProduto" FontSize="14" KeyDown="TxtBuscaProduto_KeyDown" TextChanged="TxtBuscaProduto_TextChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="0,0,8,0">
@@ -51,7 +51,7 @@
                 </Grid>
             </Border>
 
-            <!-- SugestÃµes de Produtos + Carrinho -->
+            <!-- Sugestões de Produtos + Carrinho -->
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.34*" MinHeight="110"/>
@@ -62,9 +62,9 @@
                     <DataGrid x:Name="GridSugestoes" MouseDoubleClick="GridSugestoes_MouseDoubleClick">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Produto (Duplo clique)" Binding="{Binding Nome}" Width="*"/>
-                            <DataGridTextColumn Header="CÃ³d. Barras" Binding="{Binding CodigoBarras}" Width="110"/>
+                            <DataGridTextColumn Header="Cód. Barras" Binding="{Binding CodigoBarras}" Width="110"/>
                             <DataGridTextColumn Header="Estoque" Binding="{Binding Quantidade}" Width="65"/>
-                            <DataGridTextColumn Header="PreÃ§o" Binding="{Binding PrecoVenda, StringFormat=R$ {0:N2}}" Width="90"/>
+                            <DataGridTextColumn Header="Preço" Binding="{Binding PrecoVenda, StringFormat=R$ {0:N2}}" Width="90"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>
@@ -88,7 +88,7 @@
             </Grid>
         </Grid>
 
-        <!-- Lado Direito: Fechamento da Venda e ImpressÃ£o -->
+        <!-- Lado Direito: Fechamento da Venda e Impressão -->
         <Border Grid.Column="1" Background="{DynamicResource BgCardBrush}" CornerRadius="8" Padding="18" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel>
@@ -101,8 +101,8 @@
                     <ComboBox x:Name="CmbPagamento" Margin="0,0,0,10">
                         <ComboBoxItem Content="Dinheiro" IsSelected="True"/>
                         <ComboBoxItem Content="PIX"/>
-                        <ComboBoxItem Content="CartÃ£o de DÃ©bito"/>
-                        <ComboBoxItem Content="CartÃ£o de CrÃ©dito"/>
+                        <ComboBoxItem Content="Cartão de Débito"/>
+                        <ComboBoxItem Content="Cartão de Crédito"/>
                     </ComboBox>
 
                     <Grid Margin="0,0,0,10">
@@ -140,11 +140,11 @@
                         </StackPanel>
                     </Border>
 
-                    <TextBlock Text="Impressora NÃ£o Fiscal (Bobina)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
+                    <TextBlock Text="Impressora Não Fiscal (Bobina)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                     <ComboBox x:Name="CmbImpressora" Margin="0,0,0,8"/>
                     <CheckBox x:Name="ChkImprimirCupom" Content="Imprimir cupom automaticamente" IsChecked="True" Margin="0,0,0,14"/>
 
-                    <Button Content="âœ”  FINALIZAR VENDA" Style="{StaticResource SuccessButton}" Height="44" FontSize="14.5" Click="BtnFinalizar_Click" Margin="0,0,0,8"/>
+                    <Button Content="✔  FINALIZAR VENDA" Style="{StaticResource SuccessButton}" Height="44" FontSize="14.5" Click="BtnFinalizar_Click" Margin="0,0,0,8"/>
                     <Button Content="Limpar Carrinho" Style="{StaticResource SecondaryButton}" Click="BtnLimparCarrinho_Click"/>
                 </StackPanel>
             </ScrollViewer>
